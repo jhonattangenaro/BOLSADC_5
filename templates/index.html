@@ -1,4 +1,4 @@
-<!-- templates/index.html -->
+<!-- templates/index.html - VERSIÓN RESPONSIVA -->
 {% extends "base.html" %}
 
 {% block title %}Panel de Mercado{% endblock %}
@@ -6,45 +6,39 @@
 {% block content %}
 <!-- 🔥 NUEVO: Advertencia si es fin de semana -->
 {% if es_fin_semana %}
-<div class="mb-6 bg-gradient-to-r from-yellow-500 to-orange-500 dark:from-yellow-700 dark:to-orange-700 rounded-2xl p-4 text-white shadow-lg">
-    <div class="flex items-center gap-3">
-        <div class="text-2xl">⚠️</div>
-        <div>
-            <p class="font-black text-sm uppercase">MOSTRANDO ÚLTIMO DÍA HÁBIL DISPONIBLE</p>
-            <p class="text-sm opacity-90 mt-1">
+<div class="mb-4 md:mb-6 bg-gradient-to-r from-yellow-500 to-orange-500 dark:from-yellow-700 dark:to-orange-700 rounded-xl md:rounded-2xl p-4 text-white shadow-lg">
+    <div class="flex items-start md:items-center gap-3">
+        <div class="text-2xl flex-shrink-0">⚠️</div>
+        <div class="flex-1">
+            <p class="font-black text-xs md:text-sm uppercase">MOSTRANDO ÚLTIMO DÍA HÁBIL DISPONIBLE</p>
+            <p class="text-xs md:text-sm opacity-90 mt-1">
                 La bolsa no opera los fines de semana. Se muestran datos del último día hábil: 
                 <span class="font-bold">{{ fecha_mostrar }}</span>
-            </p>
-            <p class="text-xs opacity-75 mt-2">
-                💡 <em>Puedes seleccionar otra fecha usando el calendario arriba.</em>
             </p>
         </div>
     </div>
 </div>
 {% endif %}
 
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-    <div>
-        <h2 class="text-3xl font-black italic uppercase tracking-tighter">Cotizaciones del Día</h2>
-        <p class="text-slate-500 dark:text-slate-400 font-bold uppercase text-xs tracking-widest">
-            Mercado: <span class="text-green-600 font-black">{{ fecha_mostrar }}</span>
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 md:gap-4 mb-6 md:mb-8">
+    <div class="mb-4 md:mb-0">
+        <h2 class="text-2xl md:text-3xl font-black italic uppercase tracking-tighter">Cotizaciones del Día</h2>
+        <p class="text-slate-500 dark:text-slate-400 font-bold uppercase text-xs tracking-widest mt-1">
+            <span class="text-green-600 font-black">{{ fecha_mostrar }}</span>
             {% if monto_total > 0 %}
-            <span class="ml-4 text-blue-600 dark:text-blue-400">
-                Monto Total: Bs. {{ "{:,.2f}".format(monto_total) }}
-            </span>
-            {% endif %}
-            {% if es_fin_semana %}
-            <span class="ml-4 text-yellow-600 dark:text-yellow-400">
-                ⚠️ Último día hábil
+            <span class="hidden sm:inline ml-2 md:ml-4 text-blue-600 dark:text-blue-400">
+                Monto: Bs. {{ "{:,.2f}".format(monto_total) }}
             </span>
             {% endif %}
         </p>
     </div>
     
-    <form action="/" method="GET" class="flex gap-2 w-full md:w-auto">
-        <input type="date" name="fecha" value="{{ fecha_input }}" 
-               class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-bold outline-none focus:ring-2 focus:ring-green-500 transition-all">
-        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-black uppercase text-xs shadow-lg transition-all active:scale-95">
+    <form action="/" method="GET" class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+        <div class="w-full sm:w-auto">
+            <input type="date" name="fecha" value="{{ fecha_input }}" 
+                   class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-bold outline-none focus:ring-2 focus:ring-green-500 transition-all text-sm md:text-base">
+        </div>
+        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 md:px-6 py-3 rounded-xl font-black uppercase text-xs shadow-lg transition-all active:scale-95 whitespace-nowrap">
             Consultar
         </button>
     </form>
@@ -52,45 +46,42 @@
 
 <!-- ÍNDICE BURSÁTIL DE CARACAS (IBC) -->
 {% if indice %}
-<div class="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-700 dark:to-indigo-800 rounded-3xl p-6 mb-8 text-white shadow-2xl">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div class="flex items-center gap-4">
-            <div class="bg-white/20 p-4 rounded-2xl backdrop-blur-sm">
-                <span class="text-3xl">📊</span>
+<div class="bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-700 dark:to-indigo-800 rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6 md:mb-8 text-white shadow-xl">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6">
+        <div class="flex items-center gap-3 md:gap-4">
+            <div class="bg-white/20 p-3 md:p-4 rounded-xl md:rounded-2xl backdrop-blur-sm">
+                <span class="text-2xl md:text-3xl">📊</span>
             </div>
             <div>
                 <p class="text-white/80 text-xs font-bold uppercase tracking-widest">Índice Bursátil de Caracas</p>
-                <h3 class="text-3xl font-black tracking-tight">IBC</h3>
-                <p class="text-white/70 text-sm">
+                <h3 class="text-2xl md:text-3xl font-black tracking-tight">IBC</h3>
+                <p class="text-white/70 text-xs md:text-sm">
                     {% if indice.get('fuente') == 'manual' %}
                     📝 
                     {% else %}
                     🌐 Datos Automáticos
                     {% endif %}
-                    {% if es_fin_semana %}
-                    <span class="text-yellow-300">(Último día hábil)</span>
-                    {% endif %}
                 </p>
             </div>
         </div>
         
-        <div class="text-center md:text-right">
+        <div class="text-center md:text-right mt-4 md:mt-0">
             <p class="text-white/80 text-sm font-bold uppercase">Valor Actual</p>
-            <p class="text-5xl font-black mt-1">{{ "{:,.2f}".format(indice.get('valor', 0)) }}</p>
-            <div class="mt-3 flex items-center justify-center md:justify-end gap-3">
+            <p class="text-3xl md:text-5xl font-black mt-1">{{ "{:,.2f}".format(indice.get('valor', 0)) }}</p>
+            <div class="mt-3 flex items-center justify-center md:justify-end gap-2 md:gap-3">
                 {% if indice.get('variacion', 0) > 0 %}
-                <span class="px-4 py-2 bg-green-500/30 backdrop-blur-sm rounded-full font-black flex items-center gap-2">
-                    <span class="text-xl">📈</span>
+                <span class="px-3 md:px-4 py-1 md:py-2 bg-green-500/30 backdrop-blur-sm rounded-full font-black flex items-center gap-1 md:gap-2 text-xs md:text-sm">
+                    <span class="text-lg md:text-xl">📈</span>
                     +{{ "{:,.2f}".format(indice.get('variacion', 0)) }}%
                 </span>
                 {% elif indice.get('variacion', 0) < 0 %}
-                <span class="px-4 py-2 bg-red-500/30 backdrop-blur-sm rounded-full font-black flex items-center gap-2">
-                    <span class="text-xl">📉</span>
+                <span class="px-3 md:px-4 py-1 md:py-2 bg-red-500/30 backdrop-blur-sm rounded-full font-black flex items-center gap-1 md:gap-2 text-xs md:text-sm">
+                    <span class="text-lg md:text-xl">📉</span>
                     {{ "{:,.2f}".format(indice.get('variacion', 0)) }}%
                 </span>
                 {% else %}
-                <span class="px-4 py-2 bg-slate-500/30 backdrop-blur-sm rounded-full font-black flex items-center gap-2">
-                    <span class="text-xl">⚖️</span>
+                <span class="px-3 md:px-4 py-1 md:py-2 bg-slate-500/30 backdrop-blur-sm rounded-full font-black flex items-center gap-1 md:gap-2 text-xs md:text-sm">
+                    <span class="text-lg md:text-xl">⚖️</span>
                     {{ "{:,.2f}".format(indice.get('variacion', 0)) }}%
                 </span>
                 {% endif %}
@@ -99,607 +90,342 @@
     </div>
     
     <!-- Indicadores adicionales del IBC -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-        <div class="bg-white/10 p-4 rounded-2xl backdrop-blur-sm">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mt-6 md:mt-8">
+        <div class="bg-white/10 p-3 md:p-4 rounded-xl md:rounded-2xl backdrop-blur-sm">
             <p class="text-white/70 text-xs font-bold uppercase">Fecha del Índice</p>
-            <p class="text-lg font-black">{{ fecha_mostrar }}</p>
+            <p class="text-base md:text-lg font-black">{{ fecha_mostrar }}</p>
         </div>
-        <div class="bg-white/10 p-4 rounded-2xl backdrop-blur-sm">
+        <div class="bg-white/10 p-3 md:p-4 rounded-xl md:rounded-2xl backdrop-blur-sm">
             <p class="text-white/70 text-xs font-bold uppercase">Total Instrumentos</p>
-            <p class="text-lg font-black">{{ total_acciones }}</p>
+            <p class="text-base md:text-lg font-black">{{ total_acciones }}</p>
         </div>
-        <div class="bg-white/10 p-4 rounded-2xl backdrop-blur-sm">
-            <p class="text-white/70 text-xs font-bold uppercase">Monto Total Transado</p>
-            <p class="text-lg font-black">Bs. {{ "{:,.0f}".format(monto_total) }}</p>
-        </div>
-    </div>
-    
-    <!-- Leyenda del IBC -->
-    <div class="mt-6 pt-4 border-t border-white/20 text-xs text-white/60">
-        <p class="italic">
-            El Índice Bursátil de Caracas (IBC) es el principal indicador del mercado de valores venezolano.
-            {% if indice.get('fuente') == 'manual' %}
-            <span class="text-yellow-300 font-bold">[Datos ingresados manualmente]</span>
-            {% endif %}
-            {% if es_fin_semana %}
-            <span class="text-yellow-300 font-bold">[Mostrando último día hábil disponible]</span>
-            {% endif %}
-        </p>
-    </div>
-</div>
-{% else %}
-<!-- Mensaje cuando no hay índice disponible -->
-<div class="bg-gradient-to-r from-slate-500 to-slate-600 dark:from-slate-700 dark:to-slate-800 rounded-3xl p-6 mb-8 text-white shadow-xl">
-    <div class="flex items-center justify-between">
-        <div class="flex items-center gap-4">
-            <div class="bg-white/20 p-4 rounded-2xl backdrop-blur-sm">
-                <span class="text-3xl">📊</span>
-            </div>
-            <div>
-                <p class="text-white/80 text-xs font-bold uppercase tracking-widest">Índice Bursátil de Caracas</p>
-                <h3 class="text-3xl font-black tracking-tight">IBC</h3>
-                <p class="text-white/70 text-sm">No disponible para esta fecha</p>
-            </div>
-        </div>
-        <div class="text-right">
-            <p class="text-white/80 text-sm font-bold uppercase">Valor</p>
-            <p class="text-3xl font-black opacity-50">N/D</p>
+        <div class="bg-white/10 p-3 md:p-4 rounded-xl md:rounded-2xl backdrop-blur-sm">
+            <p class="text-white/70 text-xs font-bold uppercase">Monto Total</p>
+            <p class="text-base md:text-lg font-black">Bs. {{ "{:,.0f}".format(monto_total) }}</p>
         </div>
     </div>
 </div>
 {% endif %}
 
 <!-- ESTADÍSTICAS COMPLETAS (4 TARJETAS) -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+<div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
     <!-- TOTAL INSTRUMENTOS -->
-    <div class="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900/20 dark:to-gray-900/30 rounded-2xl p-6 text-center hover:scale-[1.02] transition-transform duration-200 group">
-        <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">📊</div>
-        <div class="text-3xl font-black text-slate-700 dark:text-slate-400">{{ total_acciones }}</div>
-        <p class="text-xs font-bold uppercase text-slate-600 dark:text-slate-400 mt-1">Instrumentos Totales</p>
-        <div class="mt-2 text-[10px] text-slate-500 dark:text-slate-400 opacity-75">
-            {% if es_fin_semana %}Último día hábil{% else %}En el mercado{% endif %}
-        </div>
+    <div class="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900/20 dark:to-gray-900/30 rounded-xl md:rounded-2xl p-4 md:p-6 text-center hover:scale-[1.02] transition-transform duration-200 group">
+        <div class="text-2xl md:text-3xl mb-2 group-hover:scale-110 transition-transform">📊</div>
+        <div class="text-2xl md:text-3xl font-black text-slate-700 dark:text-slate-400">{{ total_acciones }}</div>
+        <p class="text-xs font-bold uppercase text-slate-600 dark:text-slate-400 mt-1">Instrumentos</p>
     </div>
     
     <!-- EN ALZA -->
-    <div class="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/30 rounded-2xl p-6 text-center hover:scale-[1.02] transition-transform duration-200 group">
-        <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">📈</div>
-        <div class="text-3xl font-black text-green-700 dark:text-green-400">{{ en_alza }}</div>
-        <p class="text-xs font-bold uppercase text-green-600 dark:text-green-400 mt-1">En Alza Hoy</p>
-        <div class="mt-2">
-            {% if total_acciones > 0 %}
-            <div class="w-full bg-green-200 dark:bg-green-900/40 rounded-full h-1.5">
-                <div class="bg-green-500 dark:bg-green-600 h-1.5 rounded-full" 
-                     style="width: {{ (en_alza/total_acciones*100)|round|int }}%"></div>
-            </div>
-            <div class="text-[10px] text-green-600 dark:text-green-400 mt-1">
-                {{ (en_alza/total_acciones*100)|round|int }}% del total
-            </div>
-            {% endif %}
-        </div>
+    <div class="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/30 rounded-xl md:rounded-2xl p-4 md:p-6 text-center hover:scale-[1.02] transition-transform duration-200 group">
+        <div class="text-2xl md:text-3xl mb-2 group-hover:scale-110 transition-transform">📈</div>
+        <div class="text-2xl md:text-3xl font-black text-green-700 dark:text-green-400">{{ en_alza }}</div>
+        <p class="text-xs font-bold uppercase text-green-600 dark:text-green-400 mt-1">En Alza</p>
     </div>
     
     <!-- EN BAJA -->
-    <div class="bg-gradient-to-br from-red-50 to-orange-100 dark:from-red-900/20 dark:to-orange-900/30 rounded-2xl p-6 text-center hover:scale-[1.02] transition-transform duration-200 group">
-        <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">📉</div>
-        <div class="text-3xl font-black text-red-700 dark:text-red-400">{{ en_baja }}</div>
-        <p class="text-xs font-bold uppercase text-red-600 dark:text-red-400 mt-1">En Baja Hoy</p>
-        <div class="mt-2">
-            {% if total_acciones > 0 %}
-            <div class="w-full bg-red-200 dark:bg-red-900/40 rounded-full h-1.5">
-                <div class="bg-red-500 dark:bg-red-600 h-1.5 rounded-full" 
-                     style="width: {{ (en_baja/total_acciones*100)|round|int }}%"></div>
-            </div>
-            <div class="text-[10px] text-red-600 dark:text-red-400 mt-1">
-                {{ (en_baja/total_acciones*100)|round|int }}% del total
-            </div>
-            {% endif %}
-        </div>
+    <div class="bg-gradient-to-br from-red-50 to-orange-100 dark:from-red-900/20 dark:to-orange-900/30 rounded-xl md:rounded-2xl p-4 md:p-6 text-center hover:scale-[1.02] transition-transform duration-200 group">
+        <div class="text-2xl md:text-3xl mb-2 group-hover:scale-110 transition-transform">📉</div>
+        <div class="text-2xl md:text-3xl font-black text-red-700 dark:text-red-400">{{ en_baja }}</div>
+        <p class="text-xs font-bold uppercase text-red-600 dark:text-red-400 mt-1">En Baja</p>
     </div>
     
     <!-- ESTABLES (IGUAL) -->
-    <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/30 rounded-2xl p-6 text-center hover:scale-[1.02] transition-transform duration-200 group">
-        <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">⚖️</div>
-        <div class="text-3xl font-black text-blue-700 dark:text-blue-400">{{ estables }}</div>
-        <p class="text-xs font-bold uppercase text-blue-600 dark:text-blue-400 mt-1">Estables (Igual)</p>
-        <div class="mt-2">
-            {% if total_acciones > 0 %}
-            <div class="w-full bg-blue-200 dark:bg-blue-900/40 rounded-full h-1.5">
-                <div class="bg-blue-500 dark:bg-blue-600 h-1.5 rounded-full" 
-                     style="width: {{ (estables/total_acciones*100)|round|int }}%"></div>
-            </div>
-            <div class="text-[10px] text-blue-600 dark:text-blue-400 mt-1">
-                {{ (estables/total_acciones*100)|round|int }}% del total
-            </div>
-            {% endif %}
-        </div>
+    <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/30 rounded-xl md:rounded-2xl p-4 md:p-6 text-center hover:scale-[1.02] transition-transform duration-200 group">
+        <div class="text-2xl md:text-3xl mb-2 group-hover:scale-110 transition-transform">⚖️</div>
+        <div class="text-2xl md:text-3xl font-black text-blue-700 dark:text-blue-400">{{ estables }}</div>
+        <p class="text-xs font-bold uppercase text-blue-600 dark:text-blue-400 mt-1">Estables</p>
     </div>
 </div>
 
 <!-- 🔥 SECCIÓN DE MÁS GANADORAS Y MÁS PERDEDORAS -->
 {% if top_ganadoras is defined or top_perdedoras is defined %}
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
     <!-- MÁS GANADORAS -->
-    <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-6 shadow-lg border border-green-100 dark:border-green-800/30">
+    <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg border border-green-100 dark:border-green-800/30">
         <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center">
-                    <span class="text-xl text-white">📈</span>
+            <div class="flex items-center gap-2 md:gap-3">
+                <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center">
+                    <span class="text-base md:text-xl text-white">📈</span>
                 </div>
                 <div>
-                    <h3 class="text-lg font-black text-green-800 dark:text-green-300">Más Ganadoras</h3>
+                    <h3 class="text-base md:text-lg font-black text-green-800 dark:text-green-300">Más Ganadoras</h3>
                     <p class="text-xs text-green-600 dark:text-green-400 font-bold">
-                        {% if top_ganadoras is defined and top_ganadoras|length > 0 %}
-                            TOP {{ top_ganadoras|length }} del día
-                        {% else %}
-                            TOP del día
-                        {% endif %}
+                        TOP {{ top_ganadoras|length if top_ganadoras else 0 }}
                     </p>
                 </div>
             </div>
-            <span class="text-sm font-black text-green-700 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-3 py-1 rounded-full">
-                {{ fecha_mostrar }}
-            </span>
         </div>
         
         {% if top_ganadoras is defined and top_ganadoras|length > 0 %}
-        <div class="space-y-3">
+        <div class="space-y-2 md:space-y-3">
             {% for acc in top_ganadoras %}
-            <div class="flex items-center justify-between p-3 bg-white/50 dark:bg-slate-800/30 rounded-xl hover:bg-white dark:hover:bg-slate-800/50 transition-colors">
-                <div class="flex items-center gap-3">
-                    <!-- LOGO DE LA ACCIÓN -->
+            <div class="flex items-center justify-between p-2 md:p-3 bg-white/50 dark:bg-slate-800/30 rounded-lg md:rounded-xl hover:bg-white dark:hover:bg-slate-800/50 transition-colors">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <!-- Logo de la acción -->
                     <div class="relative">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1 shadow-inner">
+                        <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1">
                             <img src="/static/img/logos/{{ acc.get('simbolo', '') }}.png" 
                                  onerror="this.src='https://ui-avatars.com/api/?name={{ acc.get('simbolo', '') }}&background=16a34a&color=fff&bold=true&size=256';" 
-                                 class="w-8 h-8 object-contain">
+                                 class="w-6 h-6 md:w-8 md:h-8 object-contain">
                         </div>
-                        <!-- BADGE DE POSICIÓN -->
-                        <div class="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center">
+                        <!-- Badge de posición -->
+                        <div class="absolute -top-1 -left-1 md:-top-2 md:-left-2 w-5 h-5 md:w-6 md:h-6 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 flex items-center justify-center">
                             <span class="text-xs font-black text-white">{{ loop.index }}</span>
                         </div>
                     </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-black text-slate-800 dark:text-white uppercase">{{ acc.get('simbolo', '') }}</span>
-                            <span class="text-xs text-green-600 dark:text-green-400">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1 md:gap-2">
+                            <span class="font-black text-slate-800 dark:text-white uppercase text-sm truncate">{{ acc.get('simbolo', '') }}</span>
+                            <span class="text-xs text-green-600 dark:text-green-400 whitespace-nowrap">
                                 +{{ "{:.2f}".format(acc.get('variacion', 0)) }}%
                             </span>
-                        </div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[150px]">
-                            {% set nombre_completo = acc.get('nombre', '') %}
-                            {% if ' (Manual)' in nombre_completo %}
-                                {{ nombre_completo.replace(' (Manual)', '')|truncate(15) }}
-                            {% else %}
-                                {{ nombre_completo|truncate(15) }}
-                            {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="font-black text-green-700 dark:text-green-400">
+                    <div class="font-black text-green-700 dark:text-green-400 text-sm md:text-base">
                         Bs. {{ "{:,.2f}".format(acc.get('hoy', 0)) }}
-                    </div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400">
-                        +{{ "{:,.4f}".format(acc.get('diferencia_bs', 0)) }}
                     </div>
                 </div>
             </div>
             {% endfor %}
-        </div>
-        
-        <div class="mt-4 pt-3 border-t border-green-100 dark:border-green-800/30">
-            <div class="flex justify-between items-center text-xs text-green-700 dark:text-green-400">
-                <span class="font-bold">Ganadora #1:</span>
-                <span class="font-black">{{ top_ganadoras[0].get('simbolo', '') }} (+{{ "{:.2f}".format(top_ganadoras[0].get('variacion', 0)) }}%)</span>
-            </div>
-        </div>
-        {% else %}
-        <div class="text-center py-6">
-            <div class="text-4xl mb-2">😴</div>
-            <p class="text-sm text-slate-500 dark:text-slate-400">No hay acciones en alza hoy</p>
         </div>
         {% endif %}
     </div>
     
     <!-- MÁS PERDEDORAS -->
-    <div class="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-2xl p-6 shadow-lg border border-red-100 dark:border-red-800/30">
+    <div class="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg border border-red-100 dark:border-red-800/30">
         <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-red-500 to-orange-600 flex items-center justify-center">
-                    <span class="text-xl text-white">📉</span>
+            <div class="flex items-center gap-2 md:gap-3">
+                <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-r from-red-500 to-orange-600 flex items-center justify-center">
+                    <span class="text-base md:text-xl text-white">📉</span>
                 </div>
                 <div>
-                    <h3 class="text-lg font-black text-red-800 dark:text-red-300">Más Perdedoras</h3>
+                    <h3 class="text-base md:text-lg font-black text-red-800 dark:text-red-300">Más Perdedoras</h3>
                     <p class="text-xs text-red-600 dark:text-red-400 font-bold">
-                        {% if top_perdedoras is defined and top_perdedoras|length > 0 %}
-                            TOP {{ top_perdedoras|length }} del día
-                        {% else %}
-                            TOP del día
-                        {% endif %}
+                        TOP {{ top_perdedoras|length if top_perdedoras else 0 }}
                     </p>
                 </div>
             </div>
-            <span class="text-sm font-black text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/40 px-3 py-1 rounded-full">
-                {{ fecha_mostrar }}
-            </span>
         </div>
         
         {% if top_perdedoras is defined and top_perdedoras|length > 0 %}
-        <div class="space-y-3">
+        <div class="space-y-2 md:space-y-3">
             {% for acc in top_perdedoras %}
-            <div class="flex items-center justify-between p-3 bg-white/50 dark:bg-slate-800/30 rounded-xl hover:bg-white dark:hover:bg-slate-800/50 transition-colors">
-                <div class="flex items-center gap-3">
-                    <!-- LOGO DE LA ACCIÓN -->
+            <div class="flex items-center justify-between p-2 md:p-3 bg-white/50 dark:bg-slate-800/30 rounded-lg md:rounded-xl hover:bg-white dark:hover:bg-slate-800/50 transition-colors">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <!-- Logo de la acción -->
                     <div class="relative">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1 shadow-inner">
+                        <div class="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1">
                             <img src="/static/img/logos/{{ acc.get('simbolo', '') }}.png" 
                                  onerror="this.src='https://ui-avatars.com/api/?name={{ acc.get('simbolo', '') }}&background=16a34a&color=fff&bold=true&size=256';" 
-                                 class="w-8 h-8 object-contain">
+                                 class="w-6 h-6 md:w-8 md:h-8 object-contain">
                         </div>
-                        <!-- BADGE DE POSICIÓN -->
-                        <div class="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-gradient-to-r from-red-500 to-orange-600 flex items-center justify-center">
+                        <!-- Badge de posición -->
+                        <div class="absolute -top-1 -left-1 md:-top-2 md:-left-2 w-5 h-5 md:w-6 md:h-6 rounded-full bg-gradient-to-r from-red-500 to-orange-600 flex items-center justify-center">
                             <span class="text-xs font-black text-white">{{ loop.index }}</span>
                         </div>
                     </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-black text-slate-800 dark:text-white uppercase">{{ acc.get('simbolo', '') }}</span>
-                            <span class="text-xs text-red-600 dark:text-red-400">
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1 md:gap-2">
+                            <span class="font-black text-slate-800 dark:text-white uppercase text-sm truncate">{{ acc.get('simbolo', '') }}</span>
+                            <span class="text-xs text-red-600 dark:text-red-400 whitespace-nowrap">
                                 {{ "{:.2f}".format(acc.get('variacion', 0)) }}%
                             </span>
                         </div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[150px]">
-                            {% set nombre_completo = acc.get('nombre', '') %}
-                            {% if ' (Manual)' in nombre_completo %}
-                                {{ nombre_completo.replace(' (Manual)', '')|truncate(15) }}
-                            {% else %}
-                                {{ nombre_completo|truncate(15) }}
-                            {% endif %}
-                        </div>
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="font-black text-red-700 dark:text-red-400">
+                    <div class="font-black text-red-700 dark:text-red-400 text-sm md:text-base">
                         Bs. {{ "{:,.2f}".format(acc.get('hoy', 0)) }}
                     </div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400">
-                        {{ "{:+,.4f}".format(acc.get('diferencia_bs', 0)) }}
-                    </div>
                 </div>
             </div>
             {% endfor %}
-        </div>
-        
-        <div class="mt-4 pt-3 border-t border-red-100 dark:border-red-800/30">
-            <div class="flex justify-between items-center text-xs text-red-700 dark:text-red-400">
-                <span class="font-bold">Perdedora #1:</span>
-                <span class="font-black">{{ top_perdedoras[0].get('simbolo', '') }} ({{ "{:.2f}".format(top_perdedoras[0].get('variacion', 0)) }}%)</span>
-            </div>
-        </div>
-        {% else %}
-        <div class="text-center py-6">
-            <div class="text-4xl mb-2">🎉</div>
-            <p class="text-sm text-slate-500 dark:text-slate-400">¡No hay acciones en baja hoy!</p>
         </div>
         {% endif %}
     </div>
 </div>
 {% endif %}
 
-<!-- 🔥 NUEVA SECCIÓN: MÁS NEGOCIADAS Y MENOS NEGOCIADAS -->
-{% if mas_negociadas is defined or menos_negociadas is defined %}
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-    <!-- MÁS NEGOCIADAS -->
-    <div class="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 rounded-2xl p-6 shadow-lg border border-purple-100 dark:border-purple-800/30">
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-purple-500 to-violet-600 flex items-center justify-center">
-                    <span class="text-xl text-white">💰</span>
-                </div>
-                <div>
-                    <h3 class="text-lg font-black text-purple-800 dark:text-purple-300">Más Negociadas</h3>
-                    <p class="text-xs text-purple-600 dark:text-purple-400 font-bold">
-                        {% if mas_negociadas is defined and mas_negociadas|length > 0 %}
-                            TOP {{ mas_negociadas|length }} por monto
-                        {% else %}
-                            TOP por monto
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
-            <span class="text-sm font-black text-purple-700 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/40 px-3 py-1 rounded-full">
-                {{ fecha_mostrar }}
-            </span>
-        </div>
-        
-        {% if mas_negociadas is defined and mas_negociadas|length > 0 %}
-        <div class="space-y-3">
-            {% for acc in mas_negociadas %}
-            <div class="flex items-center justify-between p-3 bg-white/50 dark:bg-slate-800/30 rounded-xl hover:bg-white dark:hover:bg-slate-800/50 transition-colors">
-                <div class="flex items-center gap-3">
-                    <!-- LOGO DE LA ACCIÓN -->
-                    <div class="relative">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1 shadow-inner">
-                            <img src="/static/img/logos/{{ acc.get('simbolo', '') }}.png" 
-                                 onerror="this.src='https://ui-avatars.com/api/?name={{ acc.get('simbolo', '') }}&background=16a34a&color=fff&bold=true&size=256';" 
-                                 class="w-8 h-8 object-contain">
-                        </div>
-                        <!-- BADGE DE POSICIÓN -->
-                        <div class="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-violet-600 flex items-center justify-center">
-                            <span class="text-xs font-black text-white">{{ loop.index }}</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-black text-slate-800 dark:text-white uppercase">{{ acc.get('simbolo', '') }}</span>
-                            <span class="text-xs text-purple-600 dark:text-purple-400">
-                                {{ "{:,}".format(acc.get('cantidad', 0)) }} unid.
-                            </span>
-                        </div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[150px]">
-                            {% set nombre_completo = acc.get('nombre', '') %}
-                            {% if ' (Manual)' in nombre_completo %}
-                                {{ nombre_completo.replace(' (Manual)', '')|truncate(15) }}
-                            {% else %}
-                                {{ nombre_completo|truncate(15) }}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-black text-purple-700 dark:text-purple-400">
-                        Bs. {{ "{:,.0f}".format(acc.get('monto', 0)) }}
-                    </div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400">
-                        {% if acc.get('variacion', 0) > 0 %}
-                        <span class="text-green-600 dark:text-green-400">+{{ "{:.2f}".format(acc.get('variacion', 0)) }}%</span>
-                        {% elif acc.get('variacion', 0) < 0 %}
-                        <span class="text-red-600 dark:text-red-400">{{ "{:.2f}".format(acc.get('variacion', 0)) }}%</span>
-                        {% else %}
-                        <span class="text-slate-500 dark:text-slate-400">{{ "{:.2f}".format(acc.get('variacion', 0)) }}%</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        
-        <div class="mt-4 pt-3 border-t border-purple-100 dark:border-purple-800/30">
-            <div class="flex justify-between items-center text-xs text-purple-700 dark:text-purple-400">
-                <span class="font-bold">Más negociada #1:</span>
-                <span class="font-black">{{ mas_negociadas[0].get('simbolo', '') }} (Bs. {{ "{:,.0f}".format(mas_negociadas[0].get('monto', 0)) }})</span>
-            </div>
-        </div>
-        {% else %}
-        <div class="text-center py-6">
-            <div class="text-4xl mb-2">📉</div>
-            <p class="text-sm text-slate-500 dark:text-slate-400">Sin datos de negociación</p>
-        </div>
-        {% endif %}
-    </div>
-    
-    <!-- MENOS NEGOCIADAS -->
-    <div class="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-2xl p-6 shadow-lg border border-cyan-100 dark:border-cyan-800/30">
-        <div class="flex items-center justify-between mb-4">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center">
-                    <span class="text-xl text-white">📊</span>
-                </div>
-                <div>
-                    <h3 class="text-lg font-black text-cyan-800 dark:text-cyan-300">Menos Negociadas</h3>
-                    <p class="text-xs text-cyan-600 dark:text-cyan-400 font-bold">
-                        {% if menos_negociadas is defined and menos_negociadas|length > 0 %}
-                            TOP {{ menos_negociadas|length }} por monto
-                        {% else %}
-                            TOP por monto
-                        {% endif %}
-                    </p>
-                </div>
-            </div>
-            <span class="text-sm font-black text-cyan-700 dark:text-cyan-400 bg-cyan-100 dark:bg-cyan-900/40 px-3 py-1 rounded-full">
-                {{ fecha_mostrar }}
-            </span>
-        </div>
-        
-        {% if menos_negociadas is defined and menos_negociadas|length > 0 %}
-        <div class="space-y-3">
-            {% for acc in menos_negociadas %}
-            <div class="flex items-center justify-between p-3 bg-white/50 dark:bg-slate-800/30 rounded-xl hover:bg-white dark:hover:bg-slate-800/50 transition-colors">
-                <div class="flex items-center gap-3">
-                    <!-- LOGO DE LA ACCIÓN -->
-                    <div class="relative">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1 shadow-inner">
-                            <img src="/static/img/logos/{{ acc.get('simbolo', '') }}.png" 
-                                 onerror="this.src='https://ui-avatars.com/api/?name={{ acc.get('simbolo', '') }}&background=16a34a&color=fff&bold=true&size=256';" 
-                                 class="w-8 h-8 object-contain">
-                        </div>
-                        <!-- BADGE DE POSICIÓN -->
-                        <div class="absolute -top-2 -left-2 w-6 h-6 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center">
-                            <span class="text-xs font-black text-white">{{ loop.index }}</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-black text-slate-800 dark:text-white uppercase">{{ acc.get('simbolo', '') }}</span>
-                            <span class="text-xs text-cyan-600 dark:text-cyan-400">
-                                {{ "{:,}".format(acc.get('cantidad', 0)) }} unid.
-                            </span>
-                        </div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[150px]">
-                            {% set nombre_completo = acc.get('nombre', '') %}
-                            {% if ' (Manual)' in nombre_completo %}
-                                {{ nombre_completo.replace(' (Manual)', '')|truncate(15) }}
-                            {% else %}
-                                {{ nombre_completo|truncate(15) }}
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-black text-cyan-700 dark:text-cyan-400">
-                        Bs. {{ "{:,.0f}".format(acc.get('monto', 0)) }}
-                    </div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400">
-                        {% if acc.get('variacion', 0) > 0 %}
-                        <span class="text-green-600 dark:text-green-400">+{{ "{:.2f}".format(acc.get('variacion', 0)) }}%</span>
-                        {% elif acc.get('variacion', 0) < 0 %}
-                        <span class="text-red-600 dark:text-red-400">{{ "{:.2f}".format(acc.get('variacion', 0)) }}%</span>
-                        {% else %}
-                        <span class="text-slate-500 dark:text-slate-400">{{ "{:.2f}".format(acc.get('variacion', 0)) }}%</span>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-        
-        <div class="mt-4 pt-3 border-t border-cyan-100 dark:border-cyan-800/30">
-            <div class="flex justify-between items-center text-xs text-cyan-700 dark:text-cyan-400">
-                <span class="font-bold">Menos negociada #1:</span>
-                <span class="font-black">{{ menos_negociadas[0].get('simbolo', '') }} (Bs. {{ "{:,.0f}".format(menos_negociadas[0].get('monto', 0)) }})</span>
-            </div>
-        </div>
-        {% else %}
-        <div class="text-center py-6">
-            <div class="text-4xl mb-2">📈</div>
-            <p class="text-sm text-slate-500 dark:text-slate-400">Sin datos de negociación</p>
-        </div>
-        {% endif %}
-    </div>
-</div>
-{% endif %}
-
+<!-- 🔥 TABLA PRINCIPAL SIMPLIFICADA PARA MÓVIL -->
 {% if acciones %}
-<!-- TABLA PRINCIPAL SIMPLIFICADA -->
-<div class="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-            <thead>
-                <tr class="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest">
-                    <th class="p-6 text-blue-600 dark:text-blue-400">Instrumento</th>
-                    <th class="p-6 text-right text-blue-600 dark:text-blue-400">Anterior</th>
-                    <th class="p-6 text-right text-blue-600 dark:text-blue-400">Precio Hoy</th>
-                    <th class="p-6 text-right text-blue-600 dark:text-blue-400">Diferencia (Bs)</th>
-                    <th class="p-6 text-right text-blue-600 dark:text-blue-400">Variación %</th>
-                    <th class="p-6 text-right text-blue-600 dark:text-blue-400">Monto Transado</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<div class="bg-white dark:bg-slate-900 rounded-xl md:rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden">
+    <div class="overflow-x-auto -mx-2 md:mx-0">
+        <div class="min-w-full inline-block align-middle">
+            <!-- Vista móvil simplificada -->
+            <div class="md:hidden">
                 {% for acc in acciones %}
-                <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors group">
-                    <td class="p-6 flex items-center gap-4">
-                        <div class="relative">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1 shadow-inner group-hover:scale-110 transition-transform duration-200">
-                                <img src="/static/img/logos/{{ acc.get('simbolo', '') }}.png" 
-                                     onerror="this.src='https://ui-avatars.com/api/?name={{ acc.get('simbolo', '') }}&background=16a34a&color=fff&bold=true&size=256';" 
-                                     class="w-10 h-10 object-contain">
-                            </div>
+                <div class="p-4 border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1">
+                            <img src="/static/img/logos/{{ acc.get('simbolo', '') }}.png" 
+                                 onerror="this.src='https://ui-avatars.com/api/?name={{ acc.get('simbolo', '') }}&background=16a34a&color=fff&bold=true&size=256';" 
+                                 class="w-8 h-8 object-contain">
                         </div>
                         <div>
-                            <span class="font-black text-slate-800 dark:text-white uppercase tracking-tighter block text-lg">{{ acc.get('simbolo', '') }}</span>
+                            <span class="font-black text-slate-800 dark:text-white uppercase block">{{ acc.get('simbolo', '') }}</span>
                             <span class="text-xs text-slate-500 dark:text-slate-400">
                                 {% set nombre_completo = acc.get('nombre', '') %}
                                 {% if ' (Manual)' in nombre_completo %}
-                                    {{ nombre_completo.replace(' (Manual)', '')|truncate(15) }}
+                                    {{ nombre_completo.replace(' (Manual)', '')|truncate(12) }}
                                 {% else %}
-                                    {{ nombre_completo|truncate(15) }}
+                                    {{ nombre_completo|truncate(12) }}
                                 {% endif %}
                             </span>
                         </div>
-                    </td>
+                    </div>
                     
-                    <td class="p-6 text-right">
-                        <span class="font-mono font-black text-slate-900 dark:text-white">
-                            {{ "{:,.2f}".format(acc.get('anterior', 0)) }}
-                        </span>
-                    </td>
-                    
-                    <td class="p-6 text-right">
-                        <span class="font-mono font-black text-lg 
-                            {% if acc.get('diferencia_bs', 0) > 0 %}
-                                text-green-700 dark:text-green-400
-                            {% elif acc.get('diferencia_bs', 0) < 0 %}
-                                text-red-700 dark:text-red-400
-                            {% else %}
-                                text-slate-700 dark:text-slate-300
-                            {% endif %}">
-                            {{ "{:,.2f}".format(acc.get('hoy', 0)) }}
-                        </span>
-                    </td>
-                    
-                    <td class="p-6 text-right font-mono font-bold 
-                        {% if acc.get('diferencia_bs', 0) > 0 %}
-                            text-green-600 dark:text-green-400
-                        {% elif acc.get('diferencia_bs', 0) < 0 %}
-                            text-red-600 dark:text-red-400
-                        {% else %}
-                            text-slate-400 dark:text-slate-500
-                        {% endif %}">
-                        {{ "{:+,.4f}".format(acc.get('diferencia_bs', 0)) }}
-                    </td>
-
-                    <td class="p-6 text-right">
-                        {% if acc.get('variacion', 0) > 0 %}
-                        <span class="px-3 py-1 rounded-full font-black text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                            {{ "{:+.2f}".format(acc.get('variacion', 0)) }}%
-                        </span>
-                        {% elif acc.get('variacion', 0) < 0 %}
-                        <span class="px-3 py-1 rounded-full font-black text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                            {{ "{:+.2f}".format(acc.get('variacion', 0)) }}%
-                        </span>
-                        {% else %}
-                        <span class="px-3 py-1 rounded-full font-black text-xs bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                            {{ "{:+.2f}".format(acc.get('variacion', 0)) }}%
-                        </span>
-                        {% endif %}
-                    </td>
-                    
-                    <td class="p-6 text-right">
-                        <span class="font-black text-slate-700 dark:text-slate-300">
-                            <span class="text-[10px] text-blue-500 dark:text-blue-400 mr-1 italic uppercase">Bs.</span>
-                            {{ "{:,.2f}".format(acc.get('monto', 0)) }}
-                        </span>
-                        <div class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
-                            {{ "{:,}".format(acc.get('cantidad', 0)) }} unidades
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Anterior</p>
+                            <p class="font-bold text-slate-800 dark:text-white">
+                                {{ "{:,.2f}".format(acc.get('anterior', 0)) }}
+                            </p>
                         </div>
-                    </td>
-                </tr>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Precio Hoy</p>
+                            <p class="font-bold {% if acc.get('diferencia_bs', 0) > 0 %}text-green-600 dark:text-green-400{% elif acc.get('diferencia_bs', 0) < 0 %}text-red-600 dark:text-red-400{% else %}text-slate-600 dark:text-slate-400{% endif %}">
+                                {{ "{:,.2f}".format(acc.get('hoy', 0)) }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Variación</p>
+                            {% if acc.get('variacion', 0) > 0 %}
+                            <span class="px-2 py-1 rounded-full font-bold text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                +{{ "{:.2f}".format(acc.get('variacion', 0)) }}%
+                            </span>
+                            {% elif acc.get('variacion', 0) < 0 %}
+                            <span class="px-2 py-1 rounded-full font-bold text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                {{ "{:+.2f}".format(acc.get('variacion', 0)) }}%
+                            </span>
+                            {% else %}
+                            <span class="px-2 py-1 rounded-full font-bold text-xs bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                {{ "{:+.2f}".format(acc.get('variacion', 0)) }}%
+                            </span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Monto</p>
+                            <p class="font-bold text-slate-800 dark:text-white">
+                                Bs. {{ "{:,.0f}".format(acc.get('monto', 0)) }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
-            </tbody>
-        </table>
+            </div>
+            
+            <!-- Vista desktop (tabla completa) -->
+            <table class="hidden md:table w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-800/50 text-[10px] font-black uppercase tracking-widest">
+                        <th class="p-4 md:p-6 text-blue-600 dark:text-blue-400">Instrumento</th>
+                        <th class="p-4 md:p-6 text-right text-blue-600 dark:text-blue-400">Anterior</th>
+                        <th class="p-4 md:p-6 text-right text-blue-600 dark:text-blue-400">Precio Hoy</th>
+                        <th class="p-4 md:p-6 text-right text-blue-600 dark:text-blue-400">Variación %</th>
+                        <th class="p-4 md:p-6 text-right text-blue-600 dark:text-blue-400">Monto Transado</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    {% for acc in acciones %}
+                    <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors group">
+                        <td class="p-4 md:p-6 flex items-center gap-4">
+                            <div class="relative">
+                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1 shadow-inner group-hover:scale-110 transition-transform duration-200">
+                                    <img src="/static/img/logos/{{ acc.get('simbolo', '') }}.png" 
+                                         onerror="this.src='https://ui-avatars.com/api/?name={{ acc.get('simbolo', '') }}&background=16a34a&color=fff&bold=true&size=256';" 
+                                         class="w-8 h-8 md:w-10 md:h-10 object-contain">
+                                </div>
+                            </div>
+                            <div>
+                                <span class="font-black text-slate-800 dark:text-white uppercase tracking-tighter block text-base md:text-lg">{{ acc.get('simbolo', '') }}</span>
+                                <span class="text-xs text-slate-500 dark:text-slate-400">
+                                    {% set nombre_completo = acc.get('nombre', '') %}
+                                    {% if ' (Manual)' in nombre_completo %}
+                                        {{ nombre_completo.replace(' (Manual)', '')|truncate(20) }}
+                                    {% else %}
+                                        {{ nombre_completo|truncate(20) }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </td>
+                        
+                        <td class="p-4 md:p-6 text-right">
+                            <span class="font-mono font-bold text-slate-900 dark:text-white">
+                                {{ "{:,.2f}".format(acc.get('anterior', 0)) }}
+                            </span>
+                        </td>
+                        
+                        <td class="p-4 md:p-6 text-right">
+                            <span class="font-mono font-bold text-lg 
+                                {% if acc.get('diferencia_bs', 0) > 0 %}
+                                    text-green-700 dark:text-green-400
+                                {% elif acc.get('diferencia_bs', 0) < 0 %}
+                                    text-red-700 dark:text-red-400
+                                {% else %}
+                                    text-slate-700 dark:text-slate-300
+                                {% endif %}">
+                                {{ "{:,.2f}".format(acc.get('hoy', 0)) }}
+                            </span>
+                        </td>
+
+                        <td class="p-4 md:p-6 text-right">
+                            {% if acc.get('variacion', 0) > 0 %}
+                            <span class="px-3 py-1 rounded-full font-black text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                {{ "{:+.2f}".format(acc.get('variacion', 0)) }}%
+                            </span>
+                            {% elif acc.get('variacion', 0) < 0 %}
+                            <span class="px-3 py-1 rounded-full font-black text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                {{ "{:+.2f}".format(acc.get('variacion', 0)) }}%
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1 rounded-full font-black text-xs bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                {{ "{:+.2f}".format(acc.get('variacion', 0)) }}%
+                            </span>
+                            {% endif %}
+                        </td>
+                        
+                        <td class="p-4 md:p-6 text-right">
+                            <span class="font-bold text-slate-700 dark:text-slate-300">
+                                Bs. {{ "{:,.2f}".format(acc.get('monto', 0)) }}
+                            </span>
+                            <div class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+                                {{ "{:,}".format(acc.get('cantidad', 0)) }} unid.
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <!-- Pie de página informativo -->
-<div class="mt-8 text-center text-xs text-slate-500 dark:text-slate-400">
+<div class="mt-6 md:mt-8 text-center text-xs text-slate-500 dark:text-slate-400 px-2">
     <p>
-        <span class="font-bold">Fuente de datos:</span> 
+        <span class="font-bold">Fuente:</span> 
         {% if acciones and acciones[0].get('fuente') == 'manual' %}
-        <span class="text-yellow-600 dark:text-yellow-400">📝 Ingreso Manual</span>
+        <span class="text-yellow-600 dark:text-yellow-400">📝 Manual</span>
         {% else %}
-        <span class="text-green-600 dark:text-green-400">🌐 Bolsa de Valores de Caracas</span>
+        <span class="text-green-600 dark:text-green-400">🌐 Bolsa de Valores</span>
         {% endif %}
-        • Actualizado: {{ fecha_mostrar }}
+        • {{ fecha_mostrar }}
         {% if es_fin_semana %}
-        <span class="text-yellow-600 dark:text-yellow-400"> ⚠️ (Último día hábil)</span>
-        {% endif %}
-    </p>
-    <p class="mt-1">
-        {% if indice and indice.get('fuente') == 'manual' %}
-        ⚠️ El Índice Bursátil de Caracas (IBC) fue ingresado manualmente
+        <span class="text-yellow-600 dark:text-yellow-400"> ⚠️(Último día hábil)</span>
         {% endif %}
     </p>
 </div>
 
 {% else %}
 <!-- Mensaje cuando no hay datos -->
-<div class="text-center py-20 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800/50 dark:to-slate-900/30 rounded-[3rem] border-2 border-dashed border-slate-300 dark:border-slate-700">
-    <div class="text-6xl mb-4 animate-bounce">📊</div>
-    <h3 class="text-xl font-black">Sin datos disponibles</h3>
-    <p class="text-slate-500 dark:text-slate-400 max-w-xs mx-auto mt-2">
+<div class="text-center py-12 md:py-20 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800/50 dark:to-slate-900/30 rounded-xl md:rounded-3xl border-2 border-dashed border-slate-300 dark:border-slate-700 px-4">
+    <div class="text-5xl md:text-6xl mb-4 animate-bounce">📊</div>
+    <h3 class="text-lg md:text-xl font-black">Sin datos disponibles</h3>
+    <p class="text-slate-500 dark:text-slate-400 text-sm max-w-xs mx-auto mt-2">
         No se encontraron datos de mercado para la fecha seleccionada.
-        Intenta con una fecha hábil anterior.
     </p>
     <div class="mt-6">
         <a href="/" class="inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-black uppercase text-sm transition-all active:scale-95">
@@ -708,5 +434,37 @@
     </div>
 </div>
 {% endif %}
+
+<!-- CSS para responsividad adicional -->
+<style>
+/* Mejoras de toques en móvil */
+@media (max-width: 768px) {
+    .hover\:bg-green-800:active {
+        background-color: rgb(30 64 175 / 0.8);
+    }
+    
+    /* Suavizar animaciones en móvil */
+    * {
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* Mejorar legibilidad en móvil */
+    body {
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+    }
+}
+
+/* Asegurar que las imágenes no se desborden */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Mejorar scroll en tablas móviles */
+.overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+}
+</style>
 
 {% endblock %}
