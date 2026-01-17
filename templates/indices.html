@@ -1,13 +1,13 @@
-<!-- templates/indices.html - VERSIÓN RESPONSIVA -->
+<!-- templates/indices.html - VERSIÓN COMPLETA CON COMPARATIVA -->
 {% extends "base.html" %}
 
 {% block title %}Índice General IBC vs Dólar BCV - BVC{% endblock %}
 
 {% block content %}
 <div class="mb-6 md:mb-8">
-    <h2 class="text-2xl md:text-3xl font-black italic uppercase tracking-tighter">Índice Bursátil vs Dólar BCV</h2>
+    <h2 class="text-2xl md:text-3xl font-black italic uppercase tracking-tighter">Índice Bursátil de Caracas (IBC) vs Dólar BCV</h2>
     <p class="text-slate-500 dark:text-slate-400 font-bold uppercase text-xs tracking-widest">
-        📈 Comparativa de rendimiento: Mercado bursátil vs Tipo de cambio
+        📈 Comparativa de rendimiento: Mercado bursátil vs Tipo de cambio oficial
     </p>
 </div>
 
@@ -28,11 +28,63 @@
         
         <div class="flex items-end">
             <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 md:px-6 py-3 rounded-lg font-black uppercase text-xs md:text-sm shadow-lg transition-all active:scale-95">
-                Consultar
+                Consultar Comparativa
             </button>
         </div>
     </form>
+    
+    <!-- Botones de período rápido -->
+    <div class="mt-3 md:mt-4 flex flex-wrap gap-1 md:gap-2">
+        <a href="/indices?fecha_desde={{ fecha_7d }}&fecha_hasta={{ fecha_hoy }}" 
+           class="px-2 md:px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+            Últimos 7 días
+        </a>
+        <a href="/indices?fecha_desde={{ fecha_30d }}&fecha_hasta={{ fecha_hoy }}" 
+           class="px-2 md:px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+            Últimos 30 días
+        </a>
+        <a href="/indices?fecha_desde={{ fecha_90d }}&fecha_hasta={{ fecha_hoy }}" 
+           class="px-2 md:px-3 py-1.5 bg-slate-100 dark:bg-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+            Últimos 90 días
+        </a>
+    </div>
 </div>
+
+<!-- INFORMACIÓN SOBRE REEXPRESIÓN MONETARIA -->
+{% if estadisticas_indice and estadisticas_indice.get('ajustes') and estadisticas_indice.ajustes.get('ajustados', 0) > 0 %}
+<div class="bg-gradient-to-r from-yellow-500 to-orange-500 dark:from-yellow-700 dark:to-orange-700 rounded-xl md:rounded-2xl p-4 md:p-6 mb-4 md:mb-6 text-white shadow-xl">
+    <div class="flex items-start md:items-center gap-3 md:gap-4">
+        <div class="bg-white/20 p-2 md:p-3 rounded-xl backdrop-blur-sm flex-shrink-0">
+            <span class="text-xl md:text-2xl">💰</span>
+        </div>
+        <div class="flex-1">
+            <h4 class="text-lg md:text-xl font-black mb-1">Ajuste por Reexpresión Monetaria</h4>
+            <p class="text-white/90 text-sm mb-2 md:mb-3">
+                Valores anteriores al {{ estadisticas_indice.ajustes.get('fecha_reexpresion', '27/07/2025') }} fueron divididos entre {{ estadisticas_indice.ajustes.get('factor_conversion', 1000)|int }} 
+                para normalizar la serie histórica.
+            </p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+                <div class="bg-white/10 p-2 md:p-3 rounded-lg md:rounded-xl">
+                    <p class="text-xs text-white/70 font-bold">Fecha Reexpresión</p>
+                    <p class="font-bold text-sm md:text-base">{{ estadisticas_indice.ajustes.get('fecha_reexpresion', '27/07/2025') }}</p>
+                </div>
+                <div class="bg-white/10 p-2 md:p-3 rounded-lg md:rounded-xl">
+                    <p class="text-xs text-white/70 font-bold">Factor</p>
+                    <p class="font-bold text-sm md:text-base">÷{{ estadisticas_indice.ajustes.get('factor_conversion', 1000)|int }}</p>
+                </div>
+                <div class="bg-white/10 p-2 md:p-3 rounded-lg md:rounded-xl">
+                    <p class="text-xs text-white/70 font-bold">Valores Ajustados</p>
+                    <p class="font-bold text-sm md:text-base">{{ estadisticas_indice.ajustes.get('ajustados', 0) }}</p>
+                </div>
+                <div class="bg-white/10 p-2 md:p-3 rounded-lg md:rounded-xl">
+                    <p class="text-xs text-white/70 font-bold">Sin Ajustar</p>
+                    <p class="font-bold text-sm md:text-base">{{ estadisticas_indice.ajustes.get('no_ajustados', 0) }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
 
 <!-- RESUMEN COMPARATIVO -->
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
@@ -52,6 +104,12 @@
         <div class="text-center mb-3 md:mb-4">
             <p class="text-white/80 text-xs md:text-sm font-bold uppercase">Valor Actual</p>
             <p class="text-3xl md:text-4xl font-black mt-1">{{ "{:,.2f}".format(indice.get('valor', 0)) }}</p>
+            {% if indice.get('ajustado') and indice.get('valor_original') %}
+            <p class="text-xs md:text-sm text-white/70 mt-1">
+                <span class="line-through">{{ "{:,.2f}".format(indice.get('valor_original', 0)) }}</span>
+                <span class="text-yellow-300 ml-1 md:ml-2">(÷{{ factor_conversion }})</span>
+            </p>
+            {% endif %}
         </div>
         
         <div class="grid grid-cols-2 gap-3 md:gap-4">
@@ -118,14 +176,117 @@
     {% endif %}
 </div>
 
+<!-- COMPARATIVA DE RENDIMIENTO - SECCIÓN RESTAURADA -->
+{% if indice and datos_dolar_bcv and datos_dolar_bcv|length > 0 and datos_dolar_bcv|length > 1 %}
+<div class="bg-gradient-to-r from-green-500 to-emerald-600 dark:from-green-700 dark:to-emerald-800 rounded-xl md:rounded-2xl p-4 md:p-6 mb-4 md:mb-6 text-white shadow-xl">
+    <div class="flex items-start md:items-center gap-3 md:gap-4 mb-4">
+        <div class="bg-white/20 p-2 md:p-3 rounded-xl md:rounded-2xl backdrop-blur-sm flex-shrink-0">
+            <span class="text-xl md:text-2xl">⚖️</span>
+        </div>
+        <div class="flex-1">
+            <h4 class="text-lg md:text-xl font-black mb-1">Comparativa de Rendimiento</h4>
+            <p class="text-white/70 text-xs md:text-sm">IBC vs Dólar BCV en el período seleccionado</p>
+        </div>
+    </div>
+    
+    {% set primer_dolar = datos_dolar_bcv[0] %}
+    {% set ultimo_dolar = datos_dolar_bcv[-1] %}
+    {% set variacion_dolar = 0 %}
+    {% if primer_dolar.get('tasa', 0) > 0 %}
+        {% set variacion_dolar = ((ultimo_dolar.get('tasa', 0) - primer_dolar.get('tasa', 0)) / primer_dolar.get('tasa', 0) * 100) %}
+    {% endif %}
+    {% set diferencia = indice.get('var_rel_historica', 0) - variacion_dolar %}
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+        <div class="bg-white/10 p-3 md:p-4 rounded-lg md:rounded-xl">
+            <p class="text-white/70 text-xs font-bold uppercase">Rendimiento IBC</p>
+            <p class="text-xl md:text-2xl font-black {% if indice.get('var_rel_historica', 0) > 0 %}text-green-300{% elif indice.get('var_rel_historica', 0) < 0 %}text-red-300{% endif %}">
+                {% if indice.get('var_rel_historica', 0) > 0 %}+{% endif %}{{ "{:,.2f}".format(indice.get('var_rel_historica', 0)) }}%
+            </p>
+            <p class="text-xs text-white/70 mt-1">Mercado bursátil</p>
+        </div>
+        
+        <div class="bg-white/10 p-3 md:p-4 rounded-lg md:rounded-xl">
+            <p class="text-white/70 text-xs font-bold uppercase">Rendimiento $BCV</p>
+            <p class="text-xl md:text-2xl font-black {% if variacion_dolar > 0 %}text-red-300{% elif variacion_dolar < 0 %}text-green-300{% endif %}">
+                {% if variacion_dolar > 0 %}+{% endif %}{{ "{:,.2f}".format(variacion_dolar) }}%
+            </p>
+            <p class="text-xs text-white/70 mt-1">Tipo de cambio</p>
+        </div>
+        
+        <div class="bg-white/10 p-3 md:p-4 rounded-lg md:rounded-xl">
+            <p class="text-white/70 text-xs font-bold uppercase">Diferencia</p>
+            <p class="text-xl md:text-2xl font-black {% if diferencia > 0 %}text-green-300{% elif diferencia < 0 %}text-red-300{% else %}text-yellow-300{% endif %}">
+                {% if diferencia > 0 %}+{% endif %}{{ "{:,.2f}".format(diferencia) }}%
+            </p>
+            <div class="text-xs text-white/70 mt-1">
+                {% if diferencia > 5 %}
+                <span class="flex items-center gap-1">📈 IBC supera significativamente al dólar</span>
+                {% elif diferencia > 0 %}
+                <span class="flex items-center gap-1">📈 IBC rinde mejor que el dólar</span>
+                {% elif diferencia > -5 %}
+                <span class="flex items-center gap-1">⚖️ Rendimientos similares</span>
+                {% else %}
+                <span class="flex items-center gap-1">📉 Dólar rinde mejor que IBC</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Análisis interpretativo -->
+    <div class="mt-4 pt-4 border-t border-white/20">
+        <div class="flex items-center gap-2 mb-2">
+            <span class="text-lg">💡</span>
+            <p class="text-sm font-bold text-white/90">Interpretación del Resultado</p>
+        </div>
+        <p class="text-xs text-white/80">
+            {% if diferencia > 10 %}
+            <strong>Mercado bursátil muy favorable:</strong> El IBC ha tenido un rendimiento significativamente superior al dólar BCV.
+            {% elif diferencia > 2 %}
+            <strong>Mercado bursátil favorable:</strong> El IBC ha superado al dólar BCV en este período.
+            {% elif diferencia > -2 %}
+            <strong>Rendimientos equilibrados:</strong> El mercado bursátil y el tipo de cambio han tenido desempeños similares.
+            {% elif diferencia > -10 %}
+            <strong>Tipo de cambio favorable:</strong> El dólar BCV ha tenido mejor rendimiento que el mercado bursátil.
+            {% else %}
+            <strong>Dólar muy favorable:</strong> El tipo de cambio ha superado significativamente al mercado bursátil.
+            {% endif %}
+        </p>
+    </div>
+</div>
+{% endif %}
+
 <!-- GRÁFICO COMPARATIVO -->
 <div class="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg mb-4 md:mb-6">
     <div class="flex flex-col md:flex-row items-start md:items-center justify-between mb-3 md:mb-4 gap-2 md:gap-4">
         <div>
             <h3 class="text-lg md:text-xl font-black text-slate-800 dark:text-white">Comparativa: Índice IBC vs Dólar BCV</h3>
             <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">
-                📊 Evolución comparada
+                📊 Evolución comparada del mercado bursátil y la tasa oficial del dólar
             </p>
+        </div>
+        
+        <div class="flex flex-wrap gap-2 md:gap-3">
+            <!-- Selector de visualización -->
+            <div class="flex items-center gap-1 md:gap-2">
+                <button id="btnMostrarAmbos" class="px-2 md:px-3 py-1.5 bg-green-600 text-white rounded-lg text-xs font-bold hover:bg-green-700 transition-colors">
+                    Ambos
+                </button>
+                <button id="btnMostrarIBC" class="px-2 md:px-3 py-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg text-xs font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                    Solo IBC
+                </button>
+                <button id="btnMostrarDolar" class="px-2 md:px-3 py-1.5 bg-slate-200 dark:bg-slate-700 rounded-lg text-xs font-bold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">
+                    Solo $BCV
+                </button>
+            </div>
+            
+            <!-- Selector de escala -->
+            <div class="flex items-center gap-1 md:gap-2">
+                <select id="escalaGrafico" class="p-2 text-xs md:text-sm bg-slate-100 dark:bg-slate-700 rounded-lg border border-slate-300 dark:border-slate-600">
+                    <option value="separado">Escalas separadas</option>
+                    <option value="normalizado">Valores normalizados (%)</option>
+                </select>
+            </div>
         </div>
     </div>
     
@@ -137,9 +298,41 @@
     <div class="text-center py-8 md:py-10">
         <div class="text-3xl md:text-4xl mb-2">📊</div>
         <h4 class="text-base md:text-lg font-black mb-2">No hay datos disponibles</h4>
-        <p class="text-slate-500 dark:text-slate-400 text-sm">Selecciona otro rango de fechas.</p>
+        <p class="text-slate-500 dark:text-slate-400 text-sm">Selecciona otro rango de fechas para visualizar la comparativa.</p>
     </div>
     {% endif %}
+    
+    <!-- Leyenda -->
+    <div class="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-slate-200 dark:border-slate-700">
+        <div class="flex flex-wrap gap-3 md:gap-6 items-center justify-center text-xs md:text-sm">
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 md:w-4 md:h-4 bg-blue-500 rounded-full"></div>
+                <span class="text-slate-700 dark:text-slate-300 font-bold">Índice IBC</span>
+                <span class="text-slate-500 dark:text-slate-400 text-xs">
+                    {% if indice %}
+                    {{ "{:,.2f}".format(indice.get('valor', 0)) }}
+                    {% if indice.get('var_rel_historica', 0) > 0 %}(+{% endif %}{{ "{:,.2f}".format(indice.get('var_rel_historica', 0)) }}%)
+                    {% endif %}
+                </span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 md:w-4 md:h-4 bg-red-500 rounded-full"></div>
+                <span class="text-slate-700 dark:text-slate-300 font-bold">Dólar BCV</span>
+                <span class="text-slate-500 dark:text-slate-400 text-xs">
+                    {% if datos_dolar_bcv and datos_dolar_bcv|length > 0 %}
+                    {% set ultimo_dolar = datos_dolar_bcv[-1] %}
+                    {{ "{:,.2f}".format(ultimo_dolar.get('tasa', 0)) }} Bs/$
+                    {% endif %}
+                </span>
+            </div>
+            {% if estadisticas_indice and estadisticas_indice.get('ajustes') and estadisticas_indice.ajustes.get('ajustados', 0) > 0 %}
+            <div class="flex items-center gap-2">
+                <span class="text-yellow-600 dark:text-yellow-400 font-bold">💰</span>
+                <span class="text-slate-700 dark:text-slate-300 font-bold text-xs">Ajustado ÷{{ estadisticas_indice.ajustes.get('factor_conversion', 1000)|int }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
 <!-- ESTADÍSTICAS DETALLADAS -->
@@ -182,6 +375,68 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Estadísticas del Dólar -->
+        <div class="space-y-3 md:space-y-4">
+            <h4 class="font-bold text-base md:text-lg flex items-center gap-2">
+                <span class="text-red-500">💵</span>
+                Estadísticas del Dólar BCV
+            </h4>
+            
+            {% if datos_dolar_bcv and datos_dolar_bcv|length > 0 %}
+                <!-- Calcular estadísticas del dólar directamente en Jinja2 -->
+                {% set max_tasa = 0 %}
+                {% set min_tasa = 99999999 %}
+                {% set sum_tasa = 0 %}
+                {% set count_tasa = 0 %}
+                
+                {% for d in datos_dolar_bcv %}
+                    {% if d.get('tasa', 0) > 0 %}
+                        {% if d.tasa > max_tasa %}{% set max_tasa = d.tasa %}{% endif %}
+                        {% if d.tasa < min_tasa %}{% set min_tasa = d.tasa %}{% endif %}
+                        {% set sum_tasa = sum_tasa + d.tasa %}
+                        {% set count_tasa = count_tasa + 1 %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if count_tasa > 0 %}
+                <div class="grid grid-cols-2 gap-3 md:gap-4">
+                    <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Tasa Máxima</p>
+                        <p class="text-lg md:text-xl font-black text-red-600 dark:text-red-400">
+                            {{ "{:,.2f}".format(max_tasa) }} Bs/$
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Tasa Mínima</p>
+                        <p class="text-lg md:text-xl font-black text-green-600 dark:text-green-400">
+                            {{ "{:,.2f}".format(min_tasa) }} Bs/$
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Promedio</p>
+                        <p class="text-lg md:text-xl font-black">
+                            {{ "{:,.2f}".format(sum_tasa / count_tasa) }} Bs/$
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                        <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Datos</p>
+                        <p class="text-lg md:text-xl font-black">
+                            {{ datos_dolar_bcv|length }} días
+                        </p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl">
+                    <p class="text-slate-500 dark:text-slate-400 text-sm">No hay datos suficientes del dólar BCV</p>
+                </div>
+                {% endif %}
+            {% else %}
+            <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl">
+                <p class="text-slate-500 dark:text-slate-400 text-sm">No hay datos del dólar BCV para este período</p>
+            </div>
+            {% endif %}
+        </div>
     </div>
     
     <!-- Información del período -->
@@ -190,15 +445,36 @@
             <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
                 <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Período Analizado</p>
                 <p class="font-bold text-sm md:text-base">{{ fecha_desde }} a {{ fecha_hasta }}</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ total_dias }} días totales</p>
             </div>
             <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
                 <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Cobertura de Datos</p>
                 <p class="font-bold text-sm md:text-base">{{ fechas_con_datos }} / {{ total_dias }} días</p>
+                <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full mt-2 overflow-hidden">
+                    <div class="bg-green-500 h-2 rounded-full" 
+                         style="width: {{ (fechas_con_datos / total_dias * 100)|round|int if total_dias > 0 else 0 }}%"></div>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {{ (fechas_con_datos / total_dias * 100)|round|int if total_dias > 0 else 0 }}% de cobertura
+                </p>
             </div>
+            {% if estadisticas_indice.get('ajustes') and estadisticas_indice.ajustes.get('ajustados', 0) > 0 %}
+            <div class="bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 p-3 md:p-4 rounded-lg md:rounded-xl border border-yellow-200 dark:border-yellow-800">
+                <p class="text-yellow-700 dark:text-yellow-300 text-xs font-bold uppercase">Ajuste Aplicado</p>
+                <p class="font-bold text-yellow-700 dark:text-yellow-300 text-sm md:text-base">
+                    {{ estadisticas_indice.ajustes.get('ajustados', 0) }} valores ÷{{ estadisticas_indice.ajustes.get('factor_conversion', 1000)|int }}
+                </p>
+                <p class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+                    Reexpresión: {{ estadisticas_indice.ajustes.get('fecha_reexpresion', '27/07/2025') }}
+                </p>
+            </div>
+            {% else %}
             <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
                 <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Estado</p>
                 <p class="font-bold text-sm md:text-base">Datos actuales</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Sin ajuste por reexpresión</p>
             </div>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -222,6 +498,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const pointRadius = isMobile ? 1 : 2;
     const borderWidth = isMobile ? 2 : 3;
     const fontSize = isMobile ? 9 : 11;
+    
+    // Normalizar datos para comparación porcentual
+    function normalizarDatos(datos) {
+        if (!datos || datos.length === 0) return [];
+        
+        // Encontrar el primer valor válido (no cero)
+        let primerValor = 0;
+        for (let i = 0; i < datos.length; i++) {
+            if (datos[i] > 0) {
+                primerValor = datos[i];
+                break;
+            }
+        }
+        
+        if (primerValor === 0) return datos;
+        
+        return datos.map(valor => ((valor / primerValor) - 1) * 100);
+    }
     
     // Crear el gráfico comparativo
     let chart = new Chart(ctx, {
@@ -369,6 +663,93 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Funcionalidad para cambiar visualización
+    function updateButtonStyles(activeButton) {
+        const buttons = ['btnMostrarAmbos', 'btnMostrarIBC', 'btnMostrarDolar'];
+        buttons.forEach(btnId => {
+            const btn = document.getElementById(btnId);
+            if (btnId === activeButton) {
+                btn.classList.add('bg-green-600', 'text-white');
+                btn.classList.remove('bg-slate-200', 'dark:bg-slate-700');
+            } else {
+                btn.classList.remove('bg-green-600', 'text-white');
+                btn.classList.add('bg-slate-200', 'dark:bg-slate-700');
+            }
+        });
+    }
+    
+    document.getElementById('btnMostrarAmbos').addEventListener('click', function() {
+        chart.data.datasets[0].hidden = false;
+        chart.data.datasets[1].hidden = false;
+        chart.options.scales.y.display = true;
+        chart.options.scales.y1.display = true;
+        chart.update();
+        updateButtonStyles('btnMostrarAmbos');
+    });
+    
+    document.getElementById('btnMostrarIBC').addEventListener('click', function() {
+        chart.data.datasets[0].hidden = false;
+        chart.data.datasets[1].hidden = true;
+        chart.options.scales.y.display = true;
+        chart.options.scales.y1.display = false;
+        chart.update();
+        updateButtonStyles('btnMostrarIBC');
+    });
+    
+    document.getElementById('btnMostrarDolar').addEventListener('click', function() {
+        chart.data.datasets[0].hidden = true;
+        chart.data.datasets[1].hidden = false;
+        chart.options.scales.y.display = false;
+        chart.options.scales.y1.display = true;
+        chart.update();
+        updateButtonStyles('btnMostrarDolar');
+    });
+    
+    // Funcionalidad para cambiar escala
+    document.getElementById('escalaGrafico').addEventListener('change', function() {
+        const escala = this.value;
+        
+        if (escala === 'normalizado') {
+            // Convertir a porcentajes normalizados
+            const ibcNormalizado = normalizarDatos(valoresIBC);
+            const dolarNormalizado = normalizarDatos(valoresDolar);
+            
+            chart.data.datasets[0].data = ibcNormalizado;
+            chart.data.datasets[1].data = dolarNormalizado;
+            
+            chart.options.scales.y.title.text = 'Variación % IBC';
+            chart.options.scales.y1.title.text = 'Variación % $BCV';
+            
+            chart.options.scales.y.ticks.callback = function(value) {
+                return value.toFixed(1) + '%';
+            };
+            
+            chart.options.scales.y1.ticks.callback = function(value) {
+                return value.toFixed(1) + '%';
+            };
+        } else {
+            // Volver a valores originales
+            chart.data.datasets[0].data = valoresIBC;
+            chart.data.datasets[1].data = valoresDolar;
+            
+            chart.options.scales.y.title.text = 'Índice IBC';
+            chart.options.scales.y1.title.text = 'Dólar BCV (Bs/$)';
+            
+            chart.options.scales.y.ticks.callback = function(value) {
+                if (value >= 1000) {
+                    return (value/1000).toFixed(0) + 'k';
+                }
+                return value.toLocaleString('es-VE', {maximumFractionDigits: 0});
+            };
+            
+            chart.options.scales.y1.ticks.callback = function(value) {
+                return value.toLocaleString('es-VE', {maximumFractionDigits: 0});
+            };
+        }
+        
+        chart.update();
+    });
+    
     // Redimensionar gráfico al cambiar tamaño de ventana
     window.addEventListener('resize', function() {
         const isMobileNow = window.innerWidth < 768;
@@ -395,6 +776,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         chart.update();
     });
+    
+    // Inicializar con ambos visibles
+    updateButtonStyles('btnMostrarAmbos');
 });
 </script>
 
@@ -453,6 +837,16 @@ img {
         opacity: 0.7;
         transform: scale(0.98);
     }
+}
+
+/* Animaciones suaves */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.bg-gradient-to-r, .bg-white, .bg-slate-50 {
+    animation: fadeIn 0.5s ease-out;
 }
 </style>
 
