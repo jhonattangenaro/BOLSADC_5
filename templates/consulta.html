@@ -1,233 +1,105 @@
-<!-- templates/consulta.html - VERSIÓN COMPLETA CON DÓLAR BCV -->
+<!-- templates/consulta.html - VERSIÓN RESPONSIVA -->
 {% extends "base.html" %}
 
 {% block title %}Análisis Histórico - {{ simbolo }}{% endblock %}
 
 {% block content %}
-<div class="mb-8">
-    <h2 class="text-3xl font-black italic uppercase tracking-tighter">Análisis Histórico</h2>
+<div class="mb-6 md:mb-8">
+    <h2 class="text-2xl md:text-3xl font-black italic uppercase tracking-tighter">Análisis Histórico</h2>
     <p class="text-slate-500 dark:text-slate-400 font-bold uppercase text-xs tracking-widest">
         📈 Consulta y análisis detallado por símbolo y período
     </p>
 </div>
 
 <!-- Formulario de búsqueda -->
-<div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 mb-8">
-    <form action="/consulta" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div>
+<div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 mb-6 md:mb-8">
+    <form action="/consulta" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4">
+        <div class="md:col-span-2">
             <label class="block text-[10px] font-black uppercase mb-1 ml-1 text-slate-400">Símbolo</label>
             <div class="relative">
                 <input type="text" name="simbolo" value="{{ simbolo }}" 
                        placeholder="Ej: ARCA" 
                        id="simboloInput"
-                       class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-bold uppercase outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                       class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-bold uppercase outline-none focus:ring-2 focus:ring-green-500 transition-all text-sm md:text-base"
                        autocomplete="off"
                        required>
-                <div id="sugerenciasContainer" class="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl max-h-[500px] overflow-y-auto hidden">
+                <div id="sugerenciasContainer" class="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl max-h-[400px] overflow-y-auto hidden">
                     <!-- Las sugerencias se cargarán aquí -->
                 </div>
             </div>
-            <p class="text-xs text-slate-400 mt-1 ml-1">Escribe o selecciona una acción</p>
-            <p id="accionesCount" class="text-xs text-green-600 dark:text-green-400 font-bold hidden">
-                Cargando acciones activas...
-            </p>
         </div>
         
         <div>
             <label class="block text-[10px] font-black uppercase mb-1 ml-1 text-slate-400">Fecha Desde</label>
             <input type="date" name="fecha_desde" value="{{ fecha_desde }}" 
-                   class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-bold outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                   class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-bold outline-none focus:ring-2 focus:ring-green-500 transition-all text-sm md:text-base"
                    required>
         </div>
         
         <div>
             <label class="block text-[10px] font-black uppercase mb-1 ml-1 text-slate-400">Fecha Hasta</label>
             <input type="date" name="fecha_hasta" value="{{ fecha_hasta }}" 
-                   class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-bold outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                   class="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 dark:bg-slate-900 font-bold outline-none focus:ring-2 focus:ring-green-500 transition-all text-sm md:text-base"
                    required>
         </div>
         
-        <div class="flex items-end">
-            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-3 rounded-xl transition-transform active:scale-95 uppercase text-sm shadow-lg">
+        <div class="md:col-span-4">
+            <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-3 rounded-xl transition-transform active:scale-95 uppercase text-sm shadow-lg mt-2">
                 📈 Consultar
             </button>
         </div>
     </form>
     
     <!-- Períodos rápidos -->
-    <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
-        <p class="text-xs font-bold uppercase text-slate-400 mb-3">Períodos Rápidos:</p>
-        <div class="flex flex-wrap gap-2">
+    <div class="mt-4 md:mt-6 pt-4 md:pt-6 border-t border-slate-100 dark:border-slate-700">
+        <p class="text-xs font-bold uppercase text-slate-400 mb-2 md:mb-3">Períodos Rápidos:</p>
+        <div class="flex flex-wrap gap-1 md:gap-2">
             <a href="/consulta?simbolo={{ simbolo }}&fecha_desde={{ fecha_7d }}&fecha_hasta={{ fecha_hoy }}"
-               class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95">
+               class="px-3 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg md:rounded-xl text-xs font-bold transition-all active:scale-95 whitespace-nowrap">
                 Última Semana
             </a>
             <a href="/consulta?simbolo={{ simbolo }}&fecha_desde={{ fecha_30d }}&fecha_hasta={{ fecha_hoy }}"
-               class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95">
+               class="px-3 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-lg md:rounded-xl text-xs font-bold transition-all active:scale-95 whitespace-nowrap">
                 Último Mes
             </a>
             <a href="/consulta?simbolo={{ simbolo }}&fecha_desde={{ fecha_90d }}&fecha_hasta={{ fecha_hoy }}"
-               class="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95">
-                Últimos 3 Meses
+               class="px-3 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white rounded-lg md:rounded-xl text-xs font-bold transition-all active:scale-95 whitespace-nowrap">
+                3 Meses
             </a>
             <a href="/consulta?simbolo={{ simbolo }}&fecha_desde={{ fecha_365d }}&fecha_hasta={{ fecha_hoy }}"
-               class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95">
+               class="px-3 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-lg md:rounded-xl text-xs font-bold transition-all active:scale-95 whitespace-nowrap">
                 Último Año
             </a>
-            <!-- NUEVO: Botón Histórico Completo -->
-            {% if simbolo %}
-            <a href="javascript:void(0);" onclick="cargarHistoricoCompleto('{{ simbolo }}', this)"
-               class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white rounded-xl text-xs font-bold transition-all active:scale-95 flex items-center gap-1"
-               id="btnHistoricoCompleto">
-                📅 Histórico Completo
-            </a>
-            {% endif %}
-        </div>
-        <!-- Mensaje de carga para histórico completo -->
-        <div id="loadingHistorico" class="hidden mt-3 text-xs text-amber-600 dark:text-amber-400 font-bold">
-            <span class="animate-spin">⏳</span> Buscando histórico completo...
         </div>
     </div>
 </div>
 
 {% if datos_historicos %}
-<!-- ========== NUEVA SECCIÓN: COMPARACIÓN CON DÓLAR BCV ========== -->
-{% if estadisticas_dolar and estadisticas_dolar.dias_con_dolar > 0 %}
-<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700 mb-8">
-    <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-black flex items-center gap-2">
-            <span class="text-2xl">💰</span> Comparación con Dólar BCV
-        </h3>
-        <span class="text-xs font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-3 py-1 rounded-full">
-            {{ estadisticas_dolar.dias_con_dolar }} días con datos del dólar
-        </span>
-    </div>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-        <div class="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/30 p-6 rounded-2xl border border-green-200 dark:border-green-800/30">
-            <h4 class="text-sm font-black uppercase text-green-600 dark:text-green-400 mb-4 flex items-center gap-2">
-                <span>📊</span> Rendimiento vs Dólar
-            </h4>
-            <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-green-700 dark:text-green-400">Días que supera al dólar</span>
-                    <span class="font-bold text-lg text-green-700 dark:text-green-400">
-                        {{ estadisticas_dolar.dias_supera_dolar }} días
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-green-700 dark:text-green-400">Porcentaje de días</span>
-                    <span class="font-bold text-lg text-green-700 dark:text-green-400">
-                        {{ estadisticas_dolar.porcentaje_supera_dolar }}%
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-slate-600 dark:text-slate-400">Diferencia promedio</span>
-                    <span class="font-bold text-lg {% if estadisticas_dolar.diferencia_promedio_vs_dolar > 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
-                        {{ "{:+.2f}".format(estadisticas_dolar.diferencia_promedio_vs_dolar) }}%
-                    </span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/30 p-6 rounded-2xl border border-blue-200 dark:border-blue-800/30">
-            <h4 class="text-sm font-black uppercase text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
-                <span>📈</span> Estadísticas Dólar
-            </h4>
-            <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-blue-700 dark:text-blue-400">Tasa actual</span>
-                    <span class="font-bold text-lg text-blue-700 dark:text-blue-400">
-                        Bs. {{ "{:,.4f}".format(estadisticas_dolar.tasa_dolar_actual) }}
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-blue-700 dark:text-blue-400">Precio en USD</span>
-                    <span class="font-bold text-lg text-blue-700 dark:text-blue-400">
-                        $ {{ "{:,.4f}".format(estadisticas_dolar.precio_usd_actual) }}
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-blue-700 dark:text-blue-400">Datos válidos</span>
-                    <span class="font-bold text-lg {% if estadisticas_dolar.dias_sin_dolar > 0 %}text-yellow-600 dark:text-yellow-400{% else %}text-green-600 dark:text-green-400{% endif %}">
-                        {{ estadisticas_dolar.dias_con_dolar }}/{{ fechas_con_datos }}
-                    </span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-900/20 dark:to-violet-900/30 p-6 rounded-2xl border border-purple-200 dark:border-purple-800/30">
-            <h4 class="text-sm font-black uppercase text-purple-600 dark:text-purple-400 mb-4 flex items-center gap-2">
-                <span>⚖️</span> Balance General
-            </h4>
-            <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-green-700 dark:text-green-400">Supera al dólar</span>
-                    <span class="font-bold text-lg text-green-700 dark:text-green-400">
-                        {{ estadisticas_dolar.dias_supera_dolar }}
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-red-700 dark:text-red-400">Inferior al dólar</span>
-                    <span class="font-bold text-lg text-red-700 dark:text-red-400">
-                        {{ estadisticas_dolar.dias_inferior_dolar }}
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-blue-700 dark:text-blue-400">Igual al dólar</span>
-                    <span class="font-bold text-lg text-blue-700 dark:text-blue-400">
-                        {{ estadisticas_dolar.dias_igual_dolar }}
-                    </span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Nota sobre datos del dólar -->
-    {% if estadisticas_dolar.dias_sin_dolar > 0 %}
-    <div class="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-xl border border-yellow-200 dark:border-yellow-800/30">
-        <div class="flex items-center gap-2">
-            <span class="text-yellow-600 dark:text-yellow-400 text-xl">⚠️</span>
-            <div>
-                <p class="text-sm font-bold text-yellow-700 dark:text-yellow-400">
-                    Días sin datos del dólar BCV: {{ estadisticas_dolar.dias_sin_dolar }}
-                </p>
-                <p class="text-xs text-yellow-600 dark:text-yellow-500 mt-1">
-                    Para esos días, la comparación no se puede calcular. Visite <a href="/admin/dolar-bcv" class="underline font-bold">Administración Dólar BCV</a> para cargar más datos.
-                </p>
-            </div>
-        </div>
-    </div>
-    {% endif %}
-</div>
-{% endif %}
-
 <!-- Tarjeta principal con estadísticas -->
-<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700 mb-8">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <div class="mb-6 md:mb-0">
-            <div class="flex items-center gap-4 mb-4">
+<div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 mb-6 md:mb-8">
+    <div class="flex flex-col gap-4 md:gap-8 mb-6 md:mb-8">
+        <div>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-4">
                 <!-- Logo de la acción -->
                 <div class="relative">
-                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-2 shadow-inner">
+                    <div class="w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1 md:p-2 shadow-inner">
                         <img src="/static/img/logos/{{ simbolo }}.png" 
                              onerror="this.src='https://ui-avatars.com/api/?name={{ simbolo }}&background=16a34a&color=fff&bold=true&size=256';" 
-                             class="w-12 h-12 object-contain"
+                             class="w-10 h-10 md:w-12 md:h-12 object-contain"
                              id="accionLogo">
                     </div>
                 </div>
-                <div>
+                <div class="flex-1">
                     <!-- Mostrar símbolo y nombre de la acción -->
-                    <div class="flex items-center gap-3">
-                        <h3 class="text-2xl font-black tracking-tighter uppercase">{{ simbolo }}</h3>
-                        <span class="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 px-2 py-1 rounded-full font-bold">
-                            {{ accion_nombre }}
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+                        <h3 class="text-xl md:text-2xl font-black tracking-tighter uppercase">{{ simbolo }}</h3>
+                        <span class="text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 px-2 py-1 rounded-full font-bold self-start sm:self-auto">
+                            {{ accion_nombre|truncate(25) }}
                         </span>
                     </div>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm">
-                        Período: <span class="font-bold text-green-600">{{ fecha_desde_formato }}</span> al 
-                        <span class="font-bold text-green-600">{{ fecha_hasta_formato }}</span>
-                        <span class="ml-4 text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs md:text-sm mt-1">
+                        {{ fecha_desde_formato }} al {{ fecha_hasta_formato }}
+                        <span class="ml-2 text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-full">
                             {{ datos_historicos|length }} registros
                         </span>
                     </p>
@@ -235,396 +107,249 @@
             </div>
             
             <!-- Estadísticas principales -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                 <div class="text-center">
                     <p class="text-[10px] font-bold text-slate-400 uppercase">Precio Inicial</p>
-                    <p class="text-xl font-black text-slate-800 dark:text-white">Bs. {{ "{:,.2f}".format(precio_inicial) }}</p>
+                    <p class="text-lg md:text-xl font-black text-slate-800 dark:text-white">Bs. {{ "{:,.2f}".format(precio_inicial) }}</p>
                 </div>
                 
                 <div class="text-center">
                     <p class="text-[10px] font-bold text-slate-400 uppercase">Precio Final</p>
-                    <p class="text-xl font-black text-slate-800 dark:text-white">Bs. {{ "{:,.2f}".format(precio_final) }}</p>
+                    <p class="text-lg md:text-xl font-black text-slate-800 dark:text-white">Bs. {{ "{:,.2f}".format(precio_final) }}</p>
                 </div>
                 
                 <div class="text-center">
                     <p class="text-[10px] font-bold text-slate-400 uppercase">Cambio (Bs)</p>
-                    <p class="text-xl font-black {% if cambio_bs > 0 %}text-green-600 dark:text-green-400{% elif cambio_bs < 0 %}text-red-600 dark:text-red-400{% else %}text-slate-600 dark:text-slate-400{% endif %}">
+                    <p class="text-lg md:text-xl font-black {% if cambio_bs > 0 %}text-green-600 dark:text-green-400{% elif cambio_bs < 0 %}text-red-600 dark:text-red-400{% else %}text-slate-600 dark:text-slate-400{% endif %}">
                         {{ "{:+,.2f}".format(cambio_bs) }}
                     </p>
                 </div>
                 
                 <div class="text-center">
                     <p class="text-[10px] font-bold text-slate-400 uppercase">Rendimiento %</p>
-                    <p class="text-xl font-black {% if rendimiento_porcentaje > 0 %}text-green-600 dark:text-green-400{% elif rendimiento_porcentaje < 0 %}text-red-600 dark:text-red-400{% else %}text-slate-600 dark:text-slate-400{% endif %}">
+                    <p class="text-lg md:text-xl font-black {% if rendimiento_porcentaje > 0 %}text-green-600 dark:text-green-400{% elif rendimiento_porcentaje < 0 %}text-red-600 dark:text-red-400{% else %}text-slate-600 dark:text-slate-400{% endif %}">
                         {{ "{:+.2f}".format(rendimiento_porcentaje) }}%
                     </p>
                 </div>
             </div>
         </div>
-        
-        <!-- Botón para consultar otro símbolo -->
-        <a href="/consulta" 
-           class="bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-700 hover:to-slate-800 text-white px-6 py-3 rounded-xl font-bold uppercase text-sm transition-all active:scale-95">
-            🔄 Nuevo Análisis
-        </a>
     </div>
     
-    <!-- GRÁFICO PRINCIPAL CON DÓLAR BCV -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-lg mb-10">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="text-xl font-black text-slate-800 dark:text-white">
-                Evolución de {{ simbolo }} ({{ accion_nombre }})
-                {% if estadisticas_dolar and estadisticas_dolar.dias_con_dolar > 0 %}
-                <span class="text-sm font-normal text-slate-500 dark:text-slate-400 ml-2">
-                    vs Dólar BCV
-                </span>
-                {% endif %}
+    <!-- GRÁFICO PRINCIPAL -->
+    <div class="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg mb-6 md:mb-10">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4 mb-4">
+            <h3 class="text-lg md:text-xl font-black text-slate-800 dark:text-white">
+                Evolución de {{ simbolo }}
             </h3>
             <div class="flex items-center gap-2">
                 <span class="text-xs text-slate-500 dark:text-slate-400 font-bold">
-                    {{ total_dias }} puntos de datos
+                    {{ total_dias }} puntos
                 </span>
-                {% if estadisticas_dolar and estadisticas_dolar.dias_con_dolar > 0 %}
-                <span class="text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 px-2 py-1 rounded-full">
-                    {{ estadisticas_dolar.dias_con_dolar }} días con dólar
-                </span>
-                {% endif %}
             </div>
         </div>
         
-        <div class="chart-container" style="height: 400px;">
+        <div class="chart-container" style="height: 300px; min-height: 250px;">
             <canvas id="graficoHistorico"></canvas>
-        </div>
-        
-        <!-- Leyenda del gráfico - ACTUALIZADA CON DÓLAR BCV -->
-        <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-            <div class="flex flex-wrap gap-4 items-center justify-center text-xs">
-                <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span class="text-slate-600 dark:text-slate-300">Precio de Cierre</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
-                    <span class="text-slate-600 dark:text-slate-300">Variación Diaria ({{ simbolo }})</span>
-                </div>
-                <!-- NUEVO: Leyenda para dólar BCV -->
-                {% if estadisticas_dolar and estadisticas_dolar.dias_con_dolar > 0 %}
-                <div class="flex items-center gap-2">
-                    <div class="w-3 h-3 bg-amber-500 rounded-full"></div>
-                    <span class="text-slate-600 dark:text-slate-300">Variación Dólar BCV</span>
-                </div>
-                {% endif %}
-                <div class="flex items-center gap-2">
-                    <span class="text-green-600 dark:text-green-400 font-bold">📈</span>
-                    <span class="text-slate-600 dark:text-slate-300">Tendencia positiva</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-red-600 dark:text-red-400 font-bold">📉</span>
-                    <span class="text-slate-600 dark:text-slate-300">Tendencia negativa</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- ========== SECCIÓN: COMPARTIR ANÁLISIS ========== -->
-    <div class="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-        <div class="flex items-center justify-between">
-            <h4 class="text-lg font-black text-slate-800 dark:text-white">Compartir Análisis</h4>
-            <button id="compartirAnalisisBtn" 
-                    class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all active:scale-95 flex items-center gap-2">
-                <span>📤</span> Generar Imagen para Compartir
-            </button>
-        </div>
-        
-        <!-- Contenedor para vista previa de imagen -->
-        <div id="analisisPreviewContainer" class="hidden mt-6 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700">
-            <div class="flex justify-between items-center mb-4">
-                <h5 class="font-bold text-slate-800 dark:text-white">Vista Previa para Compartir</h5>
-                <div class="flex gap-2">
-                    <button id="descargarAnalisisBtn" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded-lg flex items-center gap-1">
-                        <span>💾</span> Descargar PNG
-                    </button>
-                    <button id="copiarAnalisisBtn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-lg flex items-center gap-1">
-                        <span>📋</span> Copiar Imagen
-                    </button>
-                    <button id="cerrarAnalisisPreviewBtn" class="px-4 py-2 bg-slate-300 hover:bg-slate-400 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white text-sm rounded-lg">
-                        ✕ Cerrar
-                    </button>
-                </div>
-            </div>
-            <div id="analisisPreview" class="relative bg-white p-4 rounded-xl border border-slate-300 dark:border-slate-600">
-                <!-- La imagen generada se mostrará aquí -->
-                <canvas id="canvasAnalisisPreview" style="width: 100%; height: 300px; display: block;"></canvas>
-            </div>
-            <div class="mt-4 text-center">
-                <p class="text-sm text-slate-600 dark:text-slate-400">
-                    {{ simbolo }} - {{ accion_nombre }} | {{ fecha_desde_formato }} al {{ fecha_hasta_formato }}
-                </p>
-            </div>
         </div>
     </div>
     
     <!-- Estadísticas adicionales en tarjetas -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-        <div class="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900/20 dark:to-gray-900/30 p-6 rounded-2xl border border-slate-200 dark:border-slate-700">
-            <h4 class="text-sm font-black uppercase text-slate-600 dark:text-slate-400 mb-4 flex items-center gap-2">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-6 md:mt-8">
+        <div class="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900/20 dark:to-gray-900/30 p-4 md:p-6 rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-700">
+            <h4 class="text-sm font-black uppercase text-slate-600 dark:text-slate-400 mb-3 md:mb-4 flex items-center gap-2">
                 <span>📊</span> Estadísticas
             </h4>
-            <div class="space-y-4">
+            <div class="space-y-3 md:space-y-4">
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-slate-600 dark:text-slate-400">Precio Máximo</span>
-                    <span class="font-bold text-lg text-green-600 dark:text-green-400">
+                    <span class="text-xs md:text-sm text-slate-600 dark:text-slate-400">Precio Máximo</span>
+                    <span class="font-bold text-base md:text-lg text-green-600 dark:text-green-400">
                         Bs. {{ "{:,.2f}".format(precio_maximo) }}
                     </span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-slate-600 dark:text-slate-400">Precio Mínimo</span>
-                    <span class="font-bold text-lg text-red-600 dark:text-red-400">
+                    <span class="text-xs md:text-sm text-slate-600 dark:text-slate-400">Precio Mínimo</span>
+                    <span class="font-bold text-base md:text-lg text-red-600 dark:text-red-400">
                         Bs. {{ "{:,.2f}".format(precio_minimo) }}
                     </span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-slate-600 dark:text-slate-400">Precio Promedio</span>
-                    <span class="font-bold text-lg text-blue-600 dark:text-blue-400">
+                    <span class="text-xs md:text-sm text-slate-600 dark:text-slate-400">Precio Promedio</span>
+                    <span class="font-bold text-base md:text-lg text-blue-600 dark:text-blue-400">
                         Bs. {{ "{:,.2f}".format(precio_promedio) }}
                     </span>
                 </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-slate-600 dark:text-slate-400">Volatilidad</span>
-                    <span class="font-bold text-lg text-purple-600 dark:text-purple-400">
-                        {{ "{:.2f}".format(volatilidad) }}%
-                    </span>
-                </div>
             </div>
         </div>
         
-        <div class="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/30 p-6 rounded-2xl border border-green-200 dark:border-green-800/30">
-            <h4 class="text-sm font-black uppercase text-green-600 dark:text-green-400 mb-4 flex items-center gap-2">
+        <div class="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/30 p-4 md:p-6 rounded-xl md:rounded-2xl border border-green-200 dark:border-green-800/30">
+            <h4 class="text-sm font-black uppercase text-green-600 dark:text-green-400 mb-3 md:mb-4 flex items-center gap-2">
                 <span>📈</span> Tendencias
             </h4>
-            <div class="space-y-4">
+            <div class="space-y-3 md:space-y-4">
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-green-700 dark:text-green-400">Días en Alza</span>
-                    <span class="font-bold text-lg text-green-700 dark:text-green-400">
-                        {{ dias_alza }} ({{ (dias_alza/total_dias*100)|round(1) if total_dias > 0 else 0 }}%)
+                    <span class="text-xs md:text-sm text-green-700 dark:text-green-400">Días en Alza</span>
+                    <span class="font-bold text-base md:text-lg text-green-700 dark:text-green-400">
+                        {{ dias_alza }}
                     </span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-red-700 dark:text-red-400">Días en Baja</span>
-                    <span class="font-bold text-lg text-red-700 dark:text-red-400">
-                        {{ dias_baja }} ({{ (dias_baja/total_dias*100)|round(1) if total_dias > 0 else 0 }}%)
+                    <span class="text-xs md:text-sm text-red-700 dark:text-red-400">Días en Baja</span>
+                    <span class="font-bold text-base md:text-lg text-red-700 dark:text-red-400">
+                        {{ dias_baja }}
                     </span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-blue-700 dark:text-blue-400">Días Estables</span>
-                    <span class="font-bold text-lg text-blue-700 dark:text-blue-400">
-                        {{ dias_estables }} ({{ (dias_estables/total_dias*100)|round(1) if total_dias > 0 else 0 }}%)
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-purple-700 dark:text-purple-400">Mayor Ganancia Diaria</span>
-                    <span class="font-bold text-lg text-green-700 dark:text-green-400">
-                        +{{ "{:.2f}".format(max_ganancia_diaria) }}%
+                    <span class="text-xs md:text-sm text-blue-700 dark:text-blue-400">Días Estables</span>
+                    <span class="font-bold text-base md:text-lg text-blue-700 dark:text-blue-400">
+                        {{ dias_estables }}
                     </span>
                 </div>
             </div>
         </div>
         
-        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/30 p-6 rounded-2xl border border-blue-200 dark:border-blue-800/30">
-            <h4 class="text-sm font-black uppercase text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/30 p-4 md:p-6 rounded-xl md:rounded-2xl border border-blue-200 dark:border-blue-800/30">
+            <h4 class="text-sm font-black uppercase text-blue-600 dark:text-blue-400 mb-3 md:mb-4 flex items-center gap-2">
                 <span>📋</span> Información
             </h4>
-            <div class="space-y-4">
+            <div class="space-y-3 md:space-y-4">
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-blue-700 dark:text-blue-400">Período Total</span>
-                    <span class="font-bold text-lg">{{ total_dias }} días</span>
+                    <span class="text-xs md:text-sm text-blue-700 dark:text-blue-400">Período Total</span>
+                    <span class="font-bold text-base md:text-lg">{{ total_dias }} días</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-blue-700 dark:text-blue-400">Primer Dato</span>
-                    <span class="font-bold text-sm text-slate-800 dark:text-slate-200">{{ primera_fecha }}</span>
+                    <span class="text-xs md:text-sm text-blue-700 dark:text-blue-400">Primer Dato</span>
+                    <span class="font-bold text-xs text-slate-800 dark:text-slate-200">{{ primera_fecha }}</span>
                 </div>
                 <div class="flex justify-between items-center">
-                    <span class="text-sm text-blue-700 dark:text-blue-400">Último Dato</span>
-                    <span class="font-bold text-sm text-slate-800 dark:text-slate-200">{{ ultima_fecha }}</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-sm text-blue-700 dark:text-blue-400">Mayor Pérdida Diaria</span>
-                    <span class="font-bold text-lg text-red-700 dark:text-red-400">
-                        {{ "{:.2f}".format(max_perdida_diaria) }}%
-                    </span>
+                    <span class="text-xs md:text-sm text-blue-700 dark:text-blue-400">Último Dato</span>
+                    <span class="font-bold text-xs text-slate-800 dark:text-slate-200">{{ ultima_fecha }}</span>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Tabla de datos históricos - ACTUALIZADA CON COLUMNAS DE DÓLAR BCV -->
-<div class="bg-white dark:bg-slate-800 p-4 md:p-8 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-700">
-    <div class="flex items-center justify-between mb-6">
-        <h3 class="text-xl font-black flex items-center gap-2">
-            <span class="text-2xl">📋</span> Datos Históricos Detallados 
-            {% if datos_con_dolar and datos_con_dolar|length > 0 %}
-            <span class="text-sm text-green-600 dark:text-green-400 font-normal ml-2">
-                (con datos del dólar BCV)
-            </span>
-            {% endif %}
+<!-- Tabla de datos históricos - VERSIÓN MÓVIL -->
+<div class="bg-white dark:bg-slate-800 p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4 mb-4 md:mb-6">
+        <h3 class="text-lg md:text-xl font-black flex items-center gap-2">
+            <span class="text-xl md:text-2xl">📋</span> Datos Históricos Detallados
         </h3>
         <span class="text-xs font-bold text-slate-500 dark:text-slate-400">
             Página {{ pagina }} de {{ total_paginas }}
         </span>
     </div>
     
-    <div class="overflow-x-auto rounded-2xl border border-slate-100 dark:border-slate-700">
-        <table class="w-full text-left">
-            <thead>
-                <tr class="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
-                    <th class="p-4 text-blue-600 dark:text-blue-400">Fecha</th>
-                    <th class="p-4 text-right text-blue-600 dark:text-blue-400">Precio (Bs)</th>
-                    <th class="p-4 text-right text-blue-600 dark:text-blue-400">Variación %</th>
-                    <!-- NUEVAS COLUMNAS PARA DÓLAR BCV -->
-                    {% if datos_con_dolar and datos_con_dolar|length > 0 %}
-                    <th class="p-4 text-right text-amber-600 dark:text-amber-400">Tasa $BCV</th>
-                    <th class="p-4 text-right text-amber-600 dark:text-amber-400">Var. $BCV %</th>
-                    <th class="p-4 text-right text-amber-600 dark:text-amber-400">Diferencia</th>
-                    <th class="p-4 text-right text-green-600 dark:text-green-400">Precio (USD)</th>
-                    {% endif %}
-                    <th class="p-4 text-right text-blue-600 dark:text-blue-400">Cantidad</th>
-                    <th class="p-4 text-right text-blue-600 dark:text-blue-400">Monto (Bs)</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+    <div class="overflow-x-auto -mx-2 md:mx-0">
+        <div class="min-w-full inline-block align-middle">
+            <!-- Vista móvil para tabla de datos -->
+            <div class="md:hidden space-y-3">
                 {% for dato in datos_historicos %}
-                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-                    <td class="p-4 font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">
-                        {{ dato.fecha_formateada }}
-                    </td>
-                    <td class="p-4 text-right font-mono font-black text-lg 
-                        {% if dato.variacion > 0 %}
-                            text-green-700 dark:text-green-400
-                        {% elif dato.variacion < 0 %}
-                            text-red-700 dark:text-red-400
-                        {% else %}
-                            text-slate-700 dark:text-slate-300
-                        {% endif %}">
-                        Bs. {{ "{:,.2f}".format(dato.precio) }}
-                    </td>
-                    <td class="p-4 text-right">
-                        {% if dato.variacion > 0 %}
-                        <span class="px-3 py-1.5 rounded-full font-black text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                            +{{ "{:.2f}".format(dato.variacion) }}%
+                <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-bold text-slate-700 dark:text-slate-300">{{ dato.fecha_formateada }}</span>
+                        <span class="text-sm font-bold {% if dato.variacion > 0 %}text-green-600 dark:text-green-400{% elif dato.variacion < 0 %}text-red-600 dark:text-red-400{% else %}text-slate-500 dark:text-slate-400{% endif %}">
+                            {% if dato.variacion > 0 %}+{% endif %}{{ "{:.2f}".format(dato.variacion) }}%
                         </span>
-                        {% elif dato.variacion < 0 %}
-                        <span class="px-3 py-1.5 rounded-full font-black text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                            {{ "{:.2f}".format(dato.variacion) }}%
-                        </span>
-                        {% else %}
-                        <span class="px-3 py-1.5 rounded-full font-black text-xs bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                            {{ "{:.2f}".format(dato.variacion) }}%
-                        </span>
-                        {% endif %}
-                    </td>
+                    </div>
                     
-                    <!-- NUEVAS CELDAS CON DATOS DEL DÓLAR BCV -->
-                    {% if datos_con_dolar and datos_con_dolar|length > 0 %}
-                    {% set dolar_data = datos_con_dolar|selectattr('fecha', 'equalto', dato.fecha)|first %}
-                    {% if dolar_data %}
-                    <!-- Tasa del dólar BCV -->
-                    <td class="p-4 text-right font-mono font-bold text-slate-700 dark:text-slate-300">
-                        <div class="flex items-center justify-end gap-1">
-                            <span class="text-[10px] text-amber-500 dark:text-amber-400">Bs.</span>
-                            {{ "{:,.4f}".format(dolar_data.tasa_dolar) }}
-                            {% if not dolar_data.dolar_encontrado_exacto %}
-                            <span class="text-[8px] text-yellow-600 dark:text-yellow-400 ml-1" title="Tasa del día anterior (no había datos para esta fecha)">
-                                ≈
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Precio</p>
+                            <p class="font-bold text-slate-800 dark:text-white">
+                                Bs. {{ "{:,.2f}".format(dato.precio) }}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Cantidad</p>
+                            <p class="font-bold text-slate-800 dark:text-white">
+                                {{ "{:,}".format(dato.cantidad) }}
+                            </p>
+                        </div>
+                        <div class="col-span-2">
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Monto Total</p>
+                            <p class="font-bold text-slate-800 dark:text-white">
+                                Bs. {{ "{:,.2f}".format(dato.monto) }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Vista desktop (tabla completa) -->
+            <table class="hidden md:table w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
+                        <th class="p-4 text-blue-600 dark:text-blue-400">Fecha</th>
+                        <th class="p-4 text-right text-blue-600 dark:text-blue-400">Precio (Bs)</th>
+                        <th class="p-4 text-right text-blue-600 dark:text-blue-400">Variación %</th>
+                        <th class="p-4 text-right text-blue-600 dark:text-blue-400">Cantidad</th>
+                        <th class="p-4 text-right text-blue-600 dark:text-blue-400">Monto (Bs)</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    {% for dato in datos_historicos %}
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                        <td class="p-4 font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">
+                            {{ dato.fecha_formateada }}
+                        </td>
+                        <td class="p-4 text-right font-mono font-bold text-lg 
+                            {% if dato.variacion > 0 %}
+                                text-green-700 dark:text-green-400
+                            {% elif dato.variacion < 0 %}
+                                text-red-700 dark:text-red-400
+                            {% else %}
+                                text-slate-700 dark:text-slate-300
+                            {% endif %}">
+                            Bs. {{ "{:,.2f}".format(dato.precio) }}
+                        </td>
+                        <td class="p-4 text-right">
+                            {% if dato.variacion > 0 %}
+                            <span class="px-3 py-1.5 rounded-full font-black text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                +{{ "{:.2f}".format(dato.variacion) }}%
+                            </span>
+                            {% elif dato.variacion < 0 %}
+                            <span class="px-3 py-1.5 rounded-full font-black text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                {{ "{:.2f}".format(dato.variacion) }}%
+                            </span>
+                            {% else %}
+                            <span class="px-3 py-1.5 rounded-full font-black text-xs bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                {{ "{:.2f}".format(dato.variacion) }}%
                             </span>
                             {% endif %}
-                        </div>
-                    </td>
-                    
-                    <!-- Variación del dólar BCV -->
-                    <td class="p-4 text-right">
-                        {% if dolar_data.variacion_dolar_bcv > 0 %}
-                        <span class="px-3 py-1.5 rounded-full font-black text-xs bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400 border border-green-200 dark:border-green-800">
-                            +{{ "{:.2f}".format(dolar_data.variacion_dolar_bcv) }}%
-                        </span>
-                        {% elif dolar_data.variacion_dolar_bcv < 0 %}
-                        <span class="px-3 py-1.5 rounded-full font-black text-xs bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400 border border-red-200 dark:border-red-800">
-                            {{ "{:.2f}".format(dolar_data.variacion_dolar_bcv) }}%
-                        </span>
-                        {% else %}
-                        <span class="px-3 py-1.5 rounded-full font-black text-xs bg-slate-50 text-slate-500 dark:bg-slate-800/50 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                            {{ "{:.2f}".format(dolar_data.variacion_dolar_bcv) }}%
-                        </span>
-                        {% endif %}
-                    </td>
-                    
-                    <!-- Diferencia vs dólar -->
-                    <td class="p-4 text-right">
-                        {% set diferencia = dolar_data.diferencia_vs_dolar %}
-                        {% if diferencia > 0 %}
-                        <span class="px-3 py-1.5 rounded-full font-black text-xs bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 dark:from-green-900/30 dark:to-emerald-900/30 dark:text-green-300 border border-green-200 dark:border-green-800">
-                            +{{ "{:.2f}".format(diferencia) }}%
-                        </span>
-                        {% elif diferencia < 0 %}
-                        <span class="px-3 py-1.5 rounded-full font-black text-xs bg-gradient-to-r from-red-100 to-rose-100 text-red-800 dark:from-red-900/30 dark:to-rose-900/30 dark:text-red-300 border border-red-200 dark:border-red-800">
-                            {{ "{:.2f}".format(diferencia) }}%
-                        </span>
-                        {% else %}
-                        <span class="px-3 py-1.5 rounded-full font-black text-xs bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                            {{ "{:.2f}".format(diferencia) }}%
-                        </span>
-                        {% endif %}
-                    </td>
-                    
-                    <!-- Precio en USD -->
-                    <td class="p-4 text-right font-mono font-bold text-slate-700 dark:text-slate-300">
-                        <div class="flex items-center justify-end gap-1">
-                            <span class="text-[10px] text-green-500 dark:text-green-400">$</span>
-                            {{ "{:,.4f}".format(dolar_data.precio_usd) }}
-                        </div>
-                    </td>
-                    {% else %}
-                    <!-- Si no hay datos del dólar para esta fecha -->
-                    <td class="p-4 text-right text-slate-400 dark:text-slate-500" colspan="4">
-                        <span class="text-xs italic">Sin datos del dólar</span>
-                    </td>
-                    {% endif %}
-                    {% endif %}
-                    
-                    <!-- Columnas existentes -->
-                    <td class="p-4 text-right font-bold text-slate-700 dark:text-slate-300">
-                        {{ "{:,}".format(dato.cantidad) }}
-                    </td>
-                    <td class="p-4 text-right font-bold text-slate-700 dark:text-slate-300">
-                        <div class="flex items-center justify-end gap-1">
-                            <span class="text-[10px] text-blue-500 dark:text-blue-400 uppercase">Bs.</span>
-                            {{ "{:,.2f}".format(dato.monto) }}
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                        </td>
+                        <td class="p-4 text-right font-bold text-slate-700 dark:text-slate-300">
+                            {{ "{:,}".format(dato.cantidad) }}
+                        </td>
+                        <td class="p-4 text-right font-bold text-slate-700 dark:text-slate-300">
+                            Bs. {{ "{:,.2f}".format(dato.monto) }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     
     <!-- Paginación -->
     {% if total_paginas > 1 %}
-    <div class="mt-8 flex justify-center">
+    <div class="mt-6 md:mt-8 flex justify-center">
         <div class="flex items-center gap-2">
             {% if pagina > 1 %}
             <a href="/consulta?simbolo={{ simbolo }}&fecha_desde={{ fecha_desde }}&fecha_hasta={{ fecha_hasta }}&pagina={{ pagina-1 }}"
-               class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+               class="px-3 md:px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-sm">
                 ← Anterior
             </a>
             {% endif %}
             
-            <span class="px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-bold">
+            <span class="px-3 md:px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-bold text-sm">
                 Página {{ pagina }} de {{ total_paginas }}
             </span>
             
             {% if pagina < total_paginas %}
             <a href="/consulta?simbolo={{ simbolo }}&fecha_desde={{ fecha_desde }}&fecha_hasta={{ fecha_hasta }}&pagina={{ pagina+1 }}"
-               class="px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+               class="px-3 md:px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-sm">
                 Siguiente →
             </a>
             {% endif %}
@@ -633,49 +358,21 @@
     {% endif %}
 </div>
 
-<!-- SCRIPT DEL GRÁFICO - ACTUALIZADO CON DÓLAR BCV -->
+<!-- Script actualizado para responsividad del gráfico -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Datos para el gráfico
     const labels = {{ labels|tojson|safe if labels else '[]' }};
     const precios = {{ valores|tojson|safe if valores else '[]' }};
-    const cambios = {{ cambios|tojson|safe if cambios else '[]' }};
-    
-    // Datos del dólar BCV si están disponibles
-    const tieneDatosDolar = {{ 'true' if datos_con_dolar and datos_con_dolar|length > 0 else 'false' }};
-    let cambiosDolar = [];
-    
-    if (tieneDatosDolar) {
-        // Preparar datos del dólar BCV para el gráfico
-        const datosConDolar = {{ datos_con_dolar|tojson|safe if datos_con_dolar else '[]' }};
-        
-        // Filtrar y alinear datos del dólar con las fechas del gráfico
-        if (labels && datosConDolar) {
-            cambiosDolar = labels.map((label, index) => {
-                // Encontrar el dato del dólar correspondiente a esta fecha
-                // Para simplificar, usamos el mismo índice si los arrays están alineados
-                // En producción, se necesitaría un mapeo más preciso
-                if (datosConDolar[index]) {
-                    return datosConDolar[index].variacion_dolar_bcv || 0;
-                }
-                return 0;
-            });
-        }
-    }
-    
-    console.log("📊 Datos para gráfico:", { labels, precios, cambios, cambiosDolar });
     
     if (!labels || labels.length === 0 || !precios || precios.length === 0) {
-        console.log("⚠️ No hay datos para mostrar en el gráfico");
-        
-        // Mostrar mensaje de no datos
         const chartContainer = document.querySelector('.chart-container');
         if (chartContainer) {
             chartContainer.innerHTML = `
-                <div class="text-center py-20">
+                <div class="text-center py-12">
                     <div class="text-4xl mb-2">📊</div>
                     <h4 class="text-lg font-black mb-2">No hay datos disponibles</h4>
-                    <p class="text-slate-500 dark:text-slate-400">Selecciona otro rango de fechas para visualizar el histórico.</p>
+                    <p class="text-slate-500 dark:text-slate-400">Selecciona otro rango de fechas.</p>
                 </div>
             `;
         }
@@ -684,95 +381,53 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const ctx = document.getElementById('graficoHistorico').getContext('2d');
     
-    // Determinar color de línea basado en el rendimiento
+    // Determinar color de línea
     const rendimiento = {{ rendimiento_porcentaje|tojson|safe }};
-    let colorLinea = 'rgb(59, 130, 246)'; // Azul por defecto
+    let colorLinea = 'rgb(59, 130, 246)';
     
     if (rendimiento > 0) {
-        colorLinea = 'rgb(34, 197, 94)'; // Verde para positivo
+        colorLinea = 'rgb(34, 197, 94)';
     } else if (rendimiento < 0) {
-        colorLinea = 'rgb(239, 68, 68)'; // Rojo para negativo
+        colorLinea = 'rgb(239, 68, 68)';
     }
     
-    // Crear degradado para el fondo
-    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    // Crear degradado
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
     gradient.addColorStop(0, colorLinea.replace('rgb', 'rgba').replace(')', ', 0.2)'));
     gradient.addColorStop(1, colorLinea.replace('rgb', 'rgba').replace(')', ', 0)'));
     
-    // Configurar datasets
-    const datasets = [
-        {
-            label: 'Precio de Cierre (Bs)',
-            data: precios,
-            borderColor: colorLinea,
-            backgroundColor: gradient,
-            borderWidth: 3,
-            pointRadius: 4,
-            pointHoverRadius: 8,
-            pointBackgroundColor: colorLinea,
-            pointBorderColor: '#ffffff',
-            pointBorderWidth: 2,
-            fill: true,
-            tension: 0.4,
-            yAxisID: 'y'
-        },
-        {
-            label: 'Variación Diaria (%)',
-            data: cambios,
-            borderColor: 'rgb(168, 85, 247)', // Púrpura
-            backgroundColor: 'transparent',
-            borderWidth: 2,
-            borderDash: [5, 5],
-            pointRadius: 3,
-            pointHoverRadius: 6,
-            pointBackgroundColor: 'rgba(168, 85, 247, 0.8)',
-            pointBorderColor: 'rgb(168, 85, 247)',
-            pointBorderWidth: 2,
-            fill: false,
-            tension: 0.4,
-            yAxisID: 'y1'
-        }
-    ];
-    
-    // Agregar dataset del dólar BCV si hay datos
-    if (tieneDatosDolar && cambiosDolar.length > 0) {
-        datasets.push({
-            label: 'Variación Dólar BCV (%)',
-            data: cambiosDolar,
-            borderColor: 'rgb(245, 158, 11)', // Ámbar/naranja
-            backgroundColor: 'rgba(245, 158, 11, 0.1)',
-            borderWidth: 3,
-            pointRadius: 3,
-            pointHoverRadius: 7,
-            pointBackgroundColor: 'rgba(245, 158, 11, 0.8)',
-            pointBorderColor: '#ffffff',
-            pointBorderWidth: 2,
-            fill: false,
-            tension: 0.3,
-            yAxisID: 'y1'
-        });
-    }
-    
-    // Crear el gráfico
+    // Configurar gráfico responsivo
     const chart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
-            datasets: datasets
+            datasets: [{
+                label: 'Precio de Cierre (Bs)',
+                data: precios,
+                borderColor: colorLinea,
+                backgroundColor: gradient,
+                borderWidth: window.innerWidth < 768 ? 2 : 3,
+                pointRadius: window.innerWidth < 768 ? 2 : 4,
+                pointHoverRadius: window.innerWidth < 768 ? 6 : 8,
+                pointBackgroundColor: colorLinea,
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: window.innerWidth < 768 ? 1 : 2,
+                fill: true,
+                tension: 0.4
+            }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    display: true,
+                    display: window.innerWidth >= 768,
                     position: 'top',
                     labels: {
                         font: {
-                            size: 12,
-                            family: "'Inter', sans-serif"
+                            size: window.innerWidth < 768 ? 11 : 12
                         },
-                        padding: 20,
+                        padding: 15,
                         usePointStyle: true,
                     }
                 },
@@ -781,40 +436,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     intersect: false,
                     backgroundColor: 'rgba(15, 23, 42, 0.95)',
                     titleFont: {
-                        family: "'Inter', sans-serif",
-                        size: 12
+                        size: window.innerWidth < 768 ? 11 : 12
                     },
                     bodyFont: {
-                        family: "'Inter', sans-serif",
-                        size: 12
+                        size: window.innerWidth < 768 ? 11 : 12
                     },
-                    padding: 12,
-                    cornerRadius: 8,
+                    padding: 10,
+                    cornerRadius: 6,
                     borderColor: '#475569',
-                    borderWidth: 1,
-                    callbacks: {
-                        label: function(context) {
-                            let label = '';
-                            if (context.datasetIndex === 0) {
-                                label = `Precio: Bs ${context.parsed.y.toLocaleString('es-VE', { 
-                                    minimumFractionDigits: 2, 
-                                    maximumFractionDigits: 2 
-                                })}`;
-                            } else if (context.datasetIndex === 1) {
-                                label = `Variación ${context.dataset.label}: ${context.parsed.y.toFixed(2)}%`;
-                            } else if (context.datasetIndex === 2) {
-                                label = `Variación Dólar BCV: ${context.parsed.y.toFixed(2)}%`;
-                            }
-                            return label;
-                        },
-                        title: function(context) {
-                            const label = context[0].label;
-                            if (label) {
-                                return `Fecha: ${label}`;
-                            }
-                            return label;
-                        }
-                    }
+                    borderWidth: 1
                 }
             },
             scales: {
@@ -824,11 +454,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         color: 'rgba(0, 0, 0, 0.05)'
                     },
                     ticks: {
-                        maxRotation: 45,
-                        minRotation: 45,
+                        maxRotation: window.innerWidth < 768 ? 90 : 45,
+                        minRotation: window.innerWidth < 768 ? 90 : 45,
                         font: {
-                            family: "'Inter', sans-serif",
-                            size: 11
+                            size: window.innerWidth < 768 ? 9 : 11
                         },
                         color: '#64748b'
                     }
@@ -841,1146 +470,120 @@ document.addEventListener('DOMContentLoaded', function() {
                     },
                     ticks: {
                         callback: function(value) {
-                            return `Bs ${value.toLocaleString('es-VE')}`;
+                            if (value >= 1000) {
+                                return `Bs ${(value/1000).toFixed(0)}k`;
+                            }
+                            return `Bs ${value.toLocaleString('es-VE', {maximumFractionDigits: 0})}`;
                         },
                         font: {
-                            family: "'Inter', sans-serif",
-                            size: 11
+                            size: window.innerWidth < 768 ? 9 : 11
                         },
                         color: '#64748b'
-                    },
-                    title: {
-                        display: true,
-                        text: 'Precio (Bs)',
-                        font: {
-                            family: "'Inter', sans-serif",
-                            size: 12,
-                            weight: 'bold'
-                        },
-                        color: '#64748b'
-                    }
-                },
-                y1: {
-                    beginAtZero: true,
-                    position: 'right',
-                    grid: {
-                        drawOnChartArea: false,
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            return `${value.toFixed(1)}%`;
-                        },
-                        font: {
-                            family: "'Inter', sans-serif",
-                            size: 11
-                        },
-                        color: '#8b5cf6'
-                    },
-                    title: {
-                        display: true,
-                        text: 'Variación (%)',
-                        font: {
-                            family: "'Inter', sans-serif",
-                            size: 12,
-                            weight: 'bold'
-                        },
-                        color: '#8b5cf6'
                     }
                 }
             },
             interaction: {
                 intersect: false,
                 mode: 'index'
-            },
-            animation: {
-                duration: 1000,
-                easing: 'easeOutQuart'
             }
         }
     });
     
-    // Exponer chart globalmente
-    window.consultaChart = chart;
-    
-    // ========== FUNCIONALIDAD PARA COMPARTIR ANÁLISIS ==========
-    const compartirAnalisisBtn = document.getElementById('compartirAnalisisBtn');
-    const previewContainer = document.getElementById('analisisPreviewContainer');
-    const descargarBtn = document.getElementById('descargarAnalisisBtn');
-    const copiarBtn = document.getElementById('copiarAnalisisBtn');
-    const cerrarBtn = document.getElementById('cerrarAnalisisPreviewBtn');
-    const canvasPreview = document.getElementById('canvasAnalisisPreview');
-    
-    let analisisImageUrl = null;
-    
-    // Datos de la acción (disponibles desde Jinja2)
-    const simboloAccion = '{{ simbolo }}';
-    const nombreAccion = '{{ accion_nombre }}';
-    const periodoDesde = '{{ fecha_desde_formato }}';
-    const periodoHasta = '{{ fecha_hasta_formato }}';
-    const rendimientoPorcentaje = {{ rendimiento_porcentaje|tojson|safe }};
-    const precioActual = {{ precio_final|tojson|safe }};
-    const precioMaximo = {{ precio_maximo|tojson|safe }};
-    const precioMinimo = {{ precio_minimo|tojson|safe }};
-    const precioPromedio = {{ precio_promedio|tojson|safe }};
-    const volatilidadValor = {{ volatilidad|tojson|safe }};
-    const totalDiasAnalizados = {{ total_dias|tojson|safe }};
-    const maxGananciaDiaria = {{ max_ganancia_diaria|tojson|safe }};
-    
-    // Función para generar imagen del análisis - VERSIÓN MEJORADA CON FONDOS PERSONALIZADOS
-    async function generarImagenAnalisis() {
-        try {
-            // Mostrar estado de carga
-            const originalText = compartirAnalisisBtn.innerHTML;
-            compartirAnalisisBtn.innerHTML = '<span class="animate-spin">⏳</span> Generando imagen...';
-            compartirAnalisisBtn.disabled = true;
-            
-            // Crear canvas temporal
-            const tempCanvas = document.createElement('canvas');
-            const ctx = tempCanvas.getContext('2d');
-            
-            // Dimensiones óptimas para compartir (1200x630 es ideal para redes sociales)
-            tempCanvas.width = 1200;
-            tempCanvas.height = 630;
-            
-            // ===== FONDO CON IMAGEN PERSONALIZADA =====
-            // Determinar qué imagen usar según el tema
-            const esTemaOscuro = document.documentElement.classList.contains('dark');
-            const fondoUrl = esTemaOscuro ? '/static/compartir_white.png' : '/static/compartir_black.png';
-            
-            // Cargar imagen de fondo
-            const fondoImg = new Image();
-            fondoImg.crossOrigin = 'anonymous';
-            
-            await new Promise((resolve, reject) => {
-                fondoImg.onload = resolve;
-                fondoImg.onerror = (err) => {
-                    console.error('Error cargando fondo personalizado:', err);
-                    // Fallback a fondo sólido si la imagen no carga
-                    const fallbackGradient = ctx.createLinearGradient(0, 0, tempCanvas.width, tempCanvas.height);
-                    if (esTemaOscuro) {
-                        fallbackGradient.addColorStop(0, '#0f172a'); // Azul muy oscuro
-                        fallbackGradient.addColorStop(1, '#1e293b'); // Azul oscuro
-                    } else {
-                        fallbackGradient.addColorStop(0, '#f8fafc'); // Blanco azulado
-                        fallbackGradient.addColorStop(1, '#e2e8f0'); // Gris claro
-                    }
-                    ctx.fillStyle = fallbackGradient;
-                    ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-                    resolve();
-                };
-                fondoImg.src = fondoUrl;
-            });
-            
-            // Dibujar fondo solo si la imagen cargó correctamente
-            if (fondoImg.complete && fondoImg.naturalWidth !== 0) {
-                // Ajustar la imagen al tamaño del canvas manteniendo la proporción
-                const scale = Math.max(
-                    tempCanvas.width / fondoImg.width,
-                    tempCanvas.height / fondoImg.height
-                );
-                const x = (tempCanvas.width / 2) - (fondoImg.width / 2) * scale;
-                const y = (tempCanvas.height / 2) - (fondoImg.height / 2) * scale;
-                
-                ctx.drawImage(fondoImg, x, y, fondoImg.width * scale, fondoImg.height * scale);
-            }
-            
-            // Añadir una capa semi-transparente para mejorar legibilidad
-            ctx.fillStyle = esTemaOscuro 
-                ? 'rgba(15, 23, 42, 0.4)' 
-                : 'rgba(255, 255, 255, 0.6)';
-            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
-            
-            // ===== TARJETA PRINCIPAL CON BORDES REDONDEADOS =====
-            const cardWidth = tempCanvas.width * 0.9;
-            const cardHeight = tempCanvas.height * 0.8;
-            const cardX = (tempCanvas.width - cardWidth) / 2;
-            const cardY = (tempCanvas.height - cardHeight) / 2;
-            
-            // Fondo de la tarjeta con gradiente y sombra
-            const cardGradient = esTemaOscuro 
-                ? ctx.createLinearGradient(cardX, cardY, cardX, cardY + cardHeight)
-                : ctx.createLinearGradient(cardX, cardY, cardX, cardY + cardHeight);
-            
-            if (esTemaOscuro) {
-                cardGradient.addColorStop(0, 'rgba(30, 41, 59, 0.95)'); // Azul oscuro
-                cardGradient.addColorStop(1, 'rgba(15, 23, 42, 0.98)'); // Azul más oscuro
-            } else {
-                cardGradient.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
-                cardGradient.addColorStop(1, 'rgba(255, 255, 255, 0.98)');
-            }
-            
-            // Sombra de la tarjeta
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-            ctx.shadowBlur = 30;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 15;
-            
-            // Dibujar tarjeta con bordes redondeados
-            ctx.fillStyle = cardGradient;
-            roundRect(ctx, cardX, cardY, cardWidth, cardHeight, 30);
-            ctx.fill();
-            ctx.shadowColor = 'transparent'; // Resetear sombra
-            
-            // ===== ENCABEZADO CON LOGO DE LA ACCIÓN =====
-            const headerHeight = 120;
-            
-            // Fondo del encabezado con gradiente
-            const headerGradient = ctx.createLinearGradient(cardX, cardY, cardX, cardY + headerHeight);
-            headerGradient.addColorStop(0, '#059669'); // Verde
-            headerGradient.addColorStop(1, '#047857'); // Verde oscuro
-            ctx.fillStyle = headerGradient;
-            roundRect(ctx, cardX, cardY, cardWidth, headerHeight, {tl: 30, tr: 30, bl: 0, br: 0});
-            ctx.fill();
-            
-            // Logo pequeño de la acción
-            const logoSize = 70;
-            const logoUrl = `/static/img/logos/${simboloAccion}.png`;
-            const fallbackLogo = `https://ui-avatars.com/api/?name=${simboloAccion}&background=16a34a&color=fff&bold=true&size=512`;
-            
-            const logoImg = new Image();
-            logoImg.crossOrigin = 'anonymous';
-            
-            await new Promise((resolve) => {
-                logoImg.onload = resolve;
-                logoImg.onerror = () => {
-                    logoImg.src = fallbackLogo;
-                    logoImg.onload = resolve;
-                };
-                logoImg.src = logoUrl;
-            });
-            
-            ctx.globalAlpha = 0.9;
-            ctx.drawImage(logoImg, 
-                cardX + 40, 
-                cardY + (headerHeight - logoSize) / 2,
-                logoSize, logoSize
-            );
-            ctx.globalAlpha = 1.0;
-            
-            // Título principal
-            ctx.font = 'bold 42px "Segoe UI", Arial, sans-serif';
-            ctx.fillStyle = '#ffffff';
-            ctx.textAlign = 'left';
-            ctx.fillText('ANÁLISIS BURSÁTIL', cardX + 130, cardY + 70);
-            
-            // Subtítulo
-            ctx.font = 'bold 24px "Segoe UI", Arial, sans-serif';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-            ctx.fillText('BVC - GenaroCoin', cardX + 130, cardY + 100);
-            
-            // ===== INFORMACIÓN DE LA ACCIÓN =====
-            const infoX = cardX + 40;
-            let infoY = cardY + headerHeight + 50;
-            
-            // Símbolo y nombre de la acción
-            ctx.font = 'bold 64px "Segoe UI", Arial, sans-serif';
-            ctx.fillStyle = esTemaOscuro ? '#f1f5f9' : '#1f2937'; // Color según tema
-            ctx.textAlign = 'left';
-            ctx.fillText(simboloAccion, infoX, infoY);
-            
-            ctx.font = '28px "Segoe UI", Arial, sans-serif';
-            ctx.fillStyle = esTemaOscuro ? '#94a3b8' : '#6b7280'; // Color según tema
-            ctx.fillText(nombreAccion, infoX + 150, infoY);
-            
-            // Período analizado
-            ctx.font = '20px "Segoe UI", Arial, sans-serif';
-            ctx.fillStyle = esTemaOscuro ? '#cbd5e1' : '#9ca3af'; // Color según tema
-            ctx.fillText(`${periodoDesde} al ${periodoHasta}`, infoX, infoY + 40);
-            
-            // ===== DATOS PRINCIPALES (LADO IZQUIERDO) =====
-            const datosY = infoY + 100;
-            
-            // Precio Actual
-            ctx.font = 'bold 72px "Segoe UI", Arial, sans-serif';
-            ctx.fillStyle = esTemaOscuro ? '#f1f5f9' : '#1f2937';
-            ctx.fillText(`Bs. ${precioActual.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`, infoX, datosY);
-            
-            // Rendimiento con icono
-            const rendimientoIcono = rendimientoPorcentaje > 0 ? '📈' : rendimientoPorcentaje < 0 ? '📉' : '⚖️';
-            const rendimientoColor = rendimientoPorcentaje > 0 ? '#10b981' : rendimientoPorcentaje < 0 ? '#ef4444' : '#6b7280';
-            
-            ctx.font = 'bold 52px "Segoe UI", Arial, sans-serif';
-            ctx.fillStyle = rendimientoColor;
-            ctx.fillText(`${rendimientoIcono} ${rendimientoPorcentaje > 0 ? '+' : ''}${rendimientoPorcentaje.toFixed(2)}%`, infoX, datosY + 80);
-            
-            // ===== GRÁFICA MEJORADA (LADO DERECHO) =====
-            const graphX = cardX + cardWidth * 0.55;
-            const graphY = infoY;
-            const graphWidth = cardWidth * 0.4;
-            const graphHeight = 200;
-            
-            // Título del gráfico
-            ctx.font = 'bold 24px "Segoe UI", Arial, sans-serif';
-            ctx.fillStyle = esTemaOscuro ? '#e2e8f0' : '#374151';
-            ctx.textAlign = 'left';
-            ctx.fillText('EVOLUCIÓN', graphX, graphY - 10);
-            
-            // Dibujar área del gráfico con fondo
-            if (precios && precios.length > 0) {
-                const puntos = precios;
-                const minVal = Math.min(...puntos);
-                const maxVal = Math.max(...puntos);
-                const range = maxVal - minVal;
-                
-                // Fondo del área del gráfico
-                ctx.fillStyle = esTemaOscuro ? 'rgba(30, 41, 59, 0.8)' : 'rgba(249, 250, 251, 0.8)';
-                roundRect(ctx, graphX, graphY, graphWidth, graphHeight, 15);
-                ctx.fill();
-                
-                // Líneas de grid horizontales
-                ctx.strokeStyle = esTemaOscuro ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
-                ctx.lineWidth = 1;
-                for (let i = 0; i <= 4; i++) {
-                    const y = graphY + (i * graphHeight / 4);
-                    ctx.beginPath();
-                    ctx.moveTo(graphX, y);
-                    ctx.lineTo(graphX + graphWidth, y);
-                    ctx.stroke();
-                }
-                
-                // Línea del gráfico - ARREGLADA (sin cortes)
-                ctx.strokeStyle = rendimientoColor;
-                ctx.lineWidth = 4;
-                ctx.lineJoin = 'round';
-                ctx.lineCap = 'round';
-                ctx.beginPath();
-                
-                // Calcular puntos asegurando que estén dentro del área visible
-                for (let i = 0; i < puntos.length; i++) {
-                    const x = graphX + (i / (puntos.length - 1)) * graphWidth;
-                    const yValue = puntos[i];
-                    
-                    // Asegurar que el valor esté dentro del rango
-                    const normalizedY = ((yValue - minVal) / range);
-                    const y = graphY + graphHeight - (normalizedY * graphHeight);
-                    
-                    // Ajustar posición para no tocar los bordes
-                    const adjustedY = Math.max(graphY + 5, Math.min(graphY + graphHeight - 5, y));
-                    const adjustedX = Math.max(graphX + 5, Math.min(graphX + graphWidth - 5, x));
-                    
-                    if (i === 0) {
-                        ctx.moveTo(adjustedX, adjustedY);
-                    } else {
-                        ctx.lineTo(adjustedX, adjustedY);
-                    }
-                }
-                
-                ctx.stroke();
-                
-                // Relleno debajo de la línea
-                ctx.lineTo(graphX + graphWidth, graphY + graphHeight);
-                ctx.lineTo(graphX, graphY + graphHeight);
-                ctx.closePath();
-                ctx.fillStyle = rendimientoColor.replace('rgb', 'rgba').replace(')', ', 0.1)');
-                ctx.fill();
-                
-                // Puntos en los extremos
-                const drawPoint = (index, color) => {
-                    if (puntos[index] !== undefined) {
-                        const x = graphX + (index / (puntos.length - 1)) * graphWidth;
-                        const yValue = puntos[index];
-                        const normalizedY = ((yValue - minVal) / range);
-                        const y = graphY + graphHeight - (normalizedY * graphHeight);
-                        
-                        const adjustedY = Math.max(graphY + 5, Math.min(graphY + graphHeight - 5, y));
-                        const adjustedX = Math.max(graphX + 5, Math.min(graphX + graphWidth - 5, x));
-                        
-                        ctx.beginPath();
-                        ctx.arc(adjustedX, adjustedY, 8, 0, Math.PI * 2);
-                        ctx.fillStyle = color;
-                        ctx.fill();
-                        ctx.strokeStyle = '#ffffff';
-                        ctx.lineWidth = 3;
-                        ctx.stroke();
-                    }
-                };
-                
-                // Punto inicial (verde)
-                drawPoint(0, '#10b981');
-                // Punto final (color según rendimiento)
-                drawPoint(puntos.length - 1, rendimientoColor);
-            }
-            
-            // ===== ESTADÍSTICAS ORGANIZADAS EN TABLA =====
-            const statsX = cardX + 40;
-            const statsY = datosY + 150;
-            
-            // Título de estadísticas
-            ctx.font = 'bold 32px "Segoe UI", Arial, sans-serif';
-            ctx.fillStyle = esTemaOscuro ? '#e2e8f0' : '#374151';
-            ctx.textAlign = 'left';
-            ctx.fillText('ESTADÍSTICAS', statsX, statsY);
-            
-            // Lista de estadísticas en dos columnas
-            const estadisticasColumn1 = [
-                {label: 'Precio Máximo', value: `Bs. ${precioMaximo.toLocaleString('es-VE', {minimumFractionDigits: 2})}`, color: '#10b981'},
-                {label: 'Precio Mínimo', value: `Bs. ${precioMinimo.toLocaleString('es-VE', {minimumFractionDigits: 2})}`, color: '#ef4444'},
-                {label: 'Precio Promedio', value: `Bs. ${precioPromedio.toLocaleString('es-VE', {minimumFractionDigits: 2})}`, color: '#3b82f6'}
-            ];
-            
-            const estadisticasColumn2 = [
-                {label: 'Volatilidad', value: `${volatilidadValor.toFixed(2)}%`, color: '#8b5cf6'},
-                {label: 'Días Analizados', value: totalDiasAnalizados, color: '#f59e0b'},
-                {label: 'Mayor Ganancia', value: `+${maxGananciaDiaria.toFixed(2)}%`, color: '#10b981'}
-            ];
-            
-            // Función para dibujar una fila de estadística
-            const dibujarEstadistica = (estadistica, x, y, ancho) => {
-                // Etiqueta
-                ctx.font = '20px "Segoe UI", Arial, sans-serif';
-                ctx.fillStyle = esTemaOscuro ? '#94a3b8' : '#6b7280';
-                ctx.textAlign = 'left';
-                ctx.fillText(estadistica.label, x, y);
-                
-                // Valor
-                ctx.font = 'bold 24px "Segoe UI", Arial, sans-serif';
-                ctx.fillStyle = estadistica.color;
-                ctx.textAlign = 'right';
-                
-                const valorText = typeof estadistica.value === 'number' 
-                    ? estadistica.value.toLocaleString('es-VE') 
-                    : estadistica.value;
-                ctx.fillText(valorText, x + ancho, y);
-            };
-            
-            // Dibujar primera columna
-            const anchoColumna = 300;
-            let offsetY = 0;
-            estadisticasColumn1.forEach((stat, index) => {
-                const yPos = statsY + 50 + (offsetY * 60);
-                dibujarEstadistica(stat, statsX, yPos, anchoColumna);
-                offsetY++;
-            });
-            
-            // Dibujar segunda columna
-            offsetY = 0;
-            estadisticasColumn2.forEach((stat, index) => {
-                const yPos = statsY + 50 + (offsetY * 60);
-                dibujarEstadistica(stat, statsX + anchoColumna + 50, yPos, anchoColumna);
-                offsetY++;
-            });
-            
-            // Separador visual entre columnas
-            ctx.strokeStyle = esTemaOscuro ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(statsX + anchoColumna + 25, statsY + 40);
-            ctx.lineTo(statsX + anchoColumna + 25, statsY + 210);
-            ctx.stroke();
-            
-            // ===== PIE DE PÁGINA =====
-            const footerY = cardY + cardHeight - 40;
-            
-            // Línea decorativa
-            ctx.strokeStyle = esTemaOscuro ? '#475569' : '#e5e7eb';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(cardX + 40, footerY - 20);
-            ctx.lineTo(cardX + cardWidth - 40, footerY - 20);
-            ctx.stroke();
-            
-            // Texto del pie de página
-            ctx.font = 'bold 20px "Segoe UI", Arial, sans-serif';
-            ctx.fillStyle = esTemaOscuro ? '#94a3b8' : '#6b7280';
-            ctx.textAlign = 'center';
-            ctx.fillText('BVC - GenaroCoin - Invierte en Venezuela', cardX + cardWidth / 2, footerY);
-            
-            // Fecha de generación
-            ctx.font = '16px "Segoe UI", Arial, sans-serif';
-            ctx.fillStyle = esTemaOscuro ? '#cbd5e1' : '#9ca3af';
-            const fechaGeneracion = new Date().toLocaleDateString('es-VE', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-            ctx.fillText(`Generado: ${fechaGeneracion}`, cardX + cardWidth / 2, footerY + 25);
-            
-            // ===== MOSTRAR VISTA PREVIA =====
-            // Ajustar tamaño del canvas de preview
-            canvasPreview.width = tempCanvas.width;
-            canvasPreview.height = tempCanvas.height;
-            const previewCtx = canvasPreview.getContext('2d');
-            previewCtx.drawImage(tempCanvas, 0, 0);
-            
-            // Redimensionar para mostrar en el contenedor
-            canvasPreview.style.width = '100%';
-            canvasPreview.style.height = 'auto';
-            
-            // Convertir a URL para descargar/compartir
-            analisisImageUrl = tempCanvas.toDataURL('image/png');
-            
-            // Mostrar preview
-            previewContainer.classList.remove('hidden');
-            
-            // Restaurar botón
-            compartirAnalisisBtn.innerHTML = originalText;
-            compartirAnalisisBtn.disabled = false;
-            
-            // Desplazar hacia la vista previa
-            previewContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            
-        } catch (error) {
-            console.error('Error generando imagen de análisis:', error);
-            alert('Error al generar la imagen. Inténtalo de nuevo.');
-            
-            // Restaurar botón en caso de error
-            compartirAnalisisBtn.innerHTML = '<span>📤</span> Generar Imagen para Compartir';
-            compartirAnalisisBtn.disabled = false;
-        }
-    }
-    
-    // Función auxiliar para dibujar rectángulos con bordes redondeados
-    function roundRect(ctx, x, y, width, height, radius) {
-        if (typeof radius === 'number') {
-            radius = {tl: radius, tr: radius, br: radius, bl: radius};
-        } else {
-            radius = {...{tl: 0, tr: 0, br: 0, bl: 0}, ...radius};
-        }
-        
-        ctx.beginPath();
-        ctx.moveTo(x + radius.tl, y);
-        ctx.lineTo(x + width - radius.tr, y);
-        ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
-        ctx.lineTo(x + width, y + height - radius.br);
-        ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
-        ctx.lineTo(x + radius.bl, y + height);
-        ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
-        ctx.lineTo(x, y + radius.tl);
-        ctx.quadraticCurveTo(x, y, x + radius.tl, y);
-        ctx.closePath();
-    }
-    
-    // Event Listeners
-    if (compartirAnalisisBtn) {
-        compartirAnalisisBtn.addEventListener('click', generarImagenAnalisis);
-    }
-    
-    if (descargarBtn) {
-        descargarBtn.addEventListener('click', function() {
-            if (!analisisImageUrl) return;
-            
-            const a = document.createElement('a');
-            a.href = analisisImageUrl;
-            a.download = `BVC_Analisis_${simboloAccion}_${new Date().toISOString().split('T')[0]}.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            
-            // Mostrar confirmación
-            const originalText = descargarBtn.innerHTML;
-            descargarBtn.innerHTML = '<span>✅</span> ¡Descargado!';
-            setTimeout(() => {
-                descargarBtn.innerHTML = originalText;
-            }, 2000);
-        });
-    }
-    
-    if (copiarBtn) {
-        copiarBtn.addEventListener('click', async function() {
-            if (!analisisImageUrl) return;
-            
-            try {
-                // Mostrar estado de carga
-                const originalText = copiarBtn.innerHTML;
-                copiarBtn.innerHTML = '<span class="animate-spin">⏳</span> Copiando...';
-                
-                // Convertir data URL a blob
-                const response = await fetch(analisisImageUrl);
-                const blob = await response.blob();
-                
-                // Copiar al portapapeles
-                await navigator.clipboard.write([
-                    new ClipboardItem({
-                        'image/png': blob
-                    })
-                ]);
-                
-                // Mostrar confirmación
-                copiarBtn.innerHTML = '<span>✅</span> ¡Copiado!';
-                setTimeout(() => {
-                    copiarBtn.innerHTML = originalText;
-                }, 2000);
-                
-            } catch (error) {
-                console.error('Error copiando imagen:', error);
-                
-                // Fallback: Descargar si no se puede copiar
-                if (!analisisImageUrl) return;
-                const a = document.createElement('a');
-                a.href = analisisImageUrl;
-                a.download = `BVC_Analisis_${simboloAccion}_${new Date().toISOString().split('T')[0]}.png`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                
-                copiarBtn.innerHTML = '<span>💾</span> Se descargó en su lugar';
-                setTimeout(() => {
-                    copiarBtn.innerHTML = originalText;
-                }, 2000);
-            }
-        });
-    }
-    
-    if (cerrarBtn) {
-        cerrarBtn.addEventListener('click', function() {
-            previewContainer.classList.add('hidden');
-        });
-    }
-    
-    // Función para cargar histórico completo
-    window.cargarHistoricoCompleto = function(simbolo, elemento) {
-        console.log(`🔍 Solicitando histórico completo para: ${simbolo}`);
-        
-        // Mostrar loading
-        const btnHistorico = document.getElementById('btnHistoricoCompleto');
-        const loadingDiv = document.getElementById('loadingHistorico');
-        const textoOriginal = btnHistorico.innerHTML;
-        
-        btnHistorico.innerHTML = '<span class="animate-spin">⏳</span> Cargando...';
-        btnHistorico.classList.add('opacity-50', 'cursor-not-allowed');
-        loadingDiv.classList.remove('hidden');
-        
-        // Obtener la fecha más antigua disponible para esta acción
-        fetch(`/api/historico-completo?simbolo=${simbolo}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('📊 Respuesta de la API:', data);
-                
-                if (data.success) {
-                    // Actualizar el formulario con las fechas obtenidas
-                    const fechaDesdeInput = document.querySelector('input[name="fecha_desde"]');
-                    const fechaHastaInput = document.querySelector('input[name="fecha_hasta"]');
-                    
-                    if (fechaDesdeInput && fechaHastaInput) {
-                        fechaDesdeInput.value = data.fecha_desde;
-                        fechaHastaInput.value = data.fecha_hasta;
-                        
-                        console.log(`📅 Fechas actualizadas: ${data.fecha_desde} a ${data.fecha_hasta}`);
-                        
-                        // Actualizar mensaje de carga
-                        loadingDiv.innerHTML = `<span class="animate-spin">⏳</span> Cargando datos desde ${data.primera_fecha} hasta ${data.ultima_fecha}...`;
-                        
-                        // Enviar el formulario automáticamente después de un breve retraso
-                        setTimeout(() => {
-                            document.querySelector('form').submit();
-                        }, 1000);
-                    } else {
-                        alert('Error: No se encontraron los campos de fecha');
-                        resetBoton();
-                    }
-                } else {
-                    alert('Error: ' + data.message);
-                    console.error('Error de la API:', data);
-                    resetBoton();
-                }
-            })
-            .catch(error => {
-                console.error('Error en fetch:', error);
-                alert('Error al conectar con el servidor. Verifica la consola para más detalles.');
-                resetBoton();
-            });
-        
-        function resetBoton() {
-            btnHistorico.innerHTML = textoOriginal;
-            btnHistorico.classList.remove('opacity-50', 'cursor-not-allowed');
-            loadingDiv.classList.add('hidden');
-        }
-    }
+    // Redimensionar gráfico al cambiar tamaño de ventana
+    window.addEventListener('resize', function() {
+        chart.options.plugins.legend.display = window.innerWidth >= 768;
+        chart.options.scales.x.ticks.maxRotation = window.innerWidth < 768 ? 90 : 45;
+        chart.options.scales.x.ticks.minRotation = window.innerWidth < 768 ? 90 : 45;
+        chart.options.scales.x.ticks.font.size = window.innerWidth < 768 ? 9 : 11;
+        chart.options.scales.y.ticks.font.size = window.innerWidth < 768 ? 9 : 11;
+        chart.options.plugins.tooltip.titleFont.size = window.innerWidth < 768 ? 11 : 12;
+        chart.options.plugins.tooltip.bodyFont.size = window.innerWidth < 768 ? 11 : 12;
+        chart.update();
+    });
 });
-
-// NUEVO: Script para autocomplete dinámico de acciones ACTIVAS
-document.addEventListener('DOMContentLoaded', function() {
-    const simboloInput = document.getElementById('simboloInput');
-    const sugerenciasContainer = document.getElementById('sugerenciasContainer');
-    const accionesCount = document.getElementById('accionesCount');
-    
-    let accionesActivas = [];
-    let cargandoAcciones = false;
-    
-    // Función para cargar acciones activas desde la API
-    async function cargarAccionesActivas() {
-        if (cargandoAcciones) return;
-        
-        cargandoAcciones = true;
-        accionesCount.classList.remove('hidden');
-        accionesCount.textContent = '🔄 Cargando acciones activas del último mes...';
-        
-        try {
-            const response = await fetch('/api/acciones-activas');
-            const data = await response.json();
-            
-            if (data.success && data.acciones && data.acciones.length > 0) {
-                accionesActivas = data.acciones;
-                accionesCount.textContent = `✅ ${accionesActivas.length} acciones activas en el último mes`;
-                accionesCount.className = 'text-xs text-green-600 dark:text-green-400 font-bold';
-                
-                console.log(`Cargadas ${accionesActivas.length} acciones activas desde ${data.fecha_limite}`);
-                
-                // Si el campo está vacío, mostrar todas las acciones activas
-                if (!simboloInput.value.trim()) {
-                    mostrarTodasAccionesActivas();
-                }
-            } else {
-                accionesCount.textContent = '⚠️ No se pudieron cargar las acciones activas, intentando con todas...';
-                accionesCount.className = 'text-xs text-yellow-600 dark:text-yellow-400 font-bold';
-                
-                // Intentar con la API de todas las acciones
-                await cargarTodasAcciones();
-            }
-        } catch (error) {
-            console.error('Error cargando acciones activas:', error);
-            accionesCount.textContent = '⚠️ Error cargando acciones activas';
-            accionesCount.className = 'text-xs text-red-600 dark:text-red-400 font-bold';
-            
-            // Usar lista de respaldo
-            cargarAccionesDeRespaldo();
-        } finally {
-            cargandoAcciones = false;
-        }
-    }
-    
-    // Función para cargar todas las acciones (fallback)
-    async function cargarTodasAcciones() {
-        try {
-            const response = await fetch('/api/acciones-disponibles');
-            const data = await response.json();
-            
-            if (data.success && data.acciones && data.acciones.length > 0) {
-                accionesActivas = data.acciones.map(acc => ({
-                    ...acc,
-                    dias_activos: 0,
-                    variacion_promedio: 0,
-                    tendencia: 'desconocida',
-                    icono: '📊'
-                }));
-                
-                accionesCount.textContent = `⚠️ ${accionesActivas.length} acciones totales (no filtradas por actividad)`;
-                accionesCount.className = 'text-xs text-yellow-600 dark:text-yellow-400 font-bold';
-            } else {
-                cargarAccionesDeRespaldo();
-            }
-        } catch (error) {
-            console.error('Error cargando todas las acciones:', error);
-            cargarAccionesDeRespaldo();
-        }
-    }
-    
-    // Lista de respaldo (acciones más comunes)
-    function cargarAccionesDeRespaldo() {
-        accionesActivas = [
-            { simbolo: 'ARCA', nombre: 'ACCIONES COM. ARCA, C.A.', dias_activos: 22, variacion_promedio: 1.5, tendencia: 'alza', icono: '📈' },
-            { simbolo: 'BFR', nombre: 'BANCO FONDO COMÚN, C.A.', dias_activos: 20, variacion_promedio: 0.8, tendencia: 'alza', icono: '📈' },
-            { simbolo: 'RST', nombre: 'ROSTOCA, C.A.', dias_activos: 18, variacion_promedio: -0.5, tendencia: 'baja', icono: '📉' },
-            { simbolo: 'BNC', nombre: 'BANESCO, C.A.', dias_activos: 25, variacion_promedio: 2.1, tendencia: 'alza', icono: '📈' },
-            { simbolo: 'MVZA', nombre: 'MERCAVARCA, C.A.', dias_activos: 15, variacion_promedio: 0.2, tendencia: 'estable', icono: '⚖️' },
-            { simbolo: 'BVL', nombre: 'BANCO VENEZOLANO DE CRÉDITO', dias_activos: 23, variacion_promedio: 1.8, tendencia: 'alza', icono: '📈' },
-            { simbolo: 'BVCC', nombre: 'BOLSA DE VALORES DE CARACAS', dias_activos: 30, variacion_promedio: 0.5, tendencia: 'estable', icono: '⚖️' },
-            { simbolo: 'CCR', nombre: 'CERÁMICAS CARABOBO, C.A.', dias_activos: 12, variacion_promedio: -1.2, tendencia: 'baja', icono: '📉' }
-        ];
-        
-        accionesCount.textContent = `⚠️ Usando lista de respaldo (${accionesActivas.length} acciones)`;
-        accionesCount.className = 'text-xs text-yellow-600 dark:text-yellow-400 font-bold';
-    }
-    
-    // Función para mostrar sugerencias filtradas
-    function mostrarSugerencias(valor) {
-        sugerenciasContainer.innerHTML = '';
-        
-        if (!valor.trim() || accionesActivas.length === 0) {
-            sugerenciasContainer.classList.add('hidden');
-            return;
-        }
-        
-        valor = valor.toUpperCase();
-        const sugerencias = accionesActivas.filter(accion => 
-            accion.simbolo.includes(valor) || 
-            (accion.nombre && accion.nombre.toUpperCase().includes(valor))
-        );
-        
-        if (sugerencias.length === 0) {
-            sugerenciasContainer.classList.add('hidden');
-            return;
-        }
-        
-        // Limitar a 20 sugerencias
-        const mostrar = sugerencias.slice(0, 20);
-        
-        mostrar.forEach(accion => {
-            const item = document.createElement('div');
-            item.className = 'flex items-center gap-3 p-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700 last:border-b-0 transition-colors';
-            
-            // Color según tendencia
-            let colorTendencia = '';
-            if (accion.tendencia === 'alza') {
-                colorTendencia = 'text-green-600 dark:text-green-400';
-            } else if (accion.tendencia === 'baja') {
-                colorTendencia = 'text-red-600 dark:text-red-400';
-            } else {
-                colorTendencia = 'text-blue-600 dark:text-blue-400';
-            }
-            
-            item.innerHTML = `
-                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1">
-                    <img src="/static/img/logos/${accion.simbolo}.png" 
-                         onerror="this.src='https://ui-avatars.com/api/?name=${accion.simbolo}&background=16a34a&color=fff&bold=true&size=256';" 
-                         class="w-8 h-8 object-contain">
-                </div>
-                <div class="flex-1">
-                    <div class="flex items-center gap-2">
-                        <span class="font-black text-slate-800 dark:text-white uppercase">${accion.simbolo}</span>
-                        <span class="text-xs ${colorTendencia}">${accion.icono}</span>
-                    </div>
-                    <div class="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[200px]">${accion.nombre || accion.simbolo}</div>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="text-[10px] text-slate-400 dark:text-slate-500">${accion.dias_activos} días</span>
-                        <span class="text-[10px] ${accion.variacion_promedio > 0 ? 'text-green-600 dark:text-green-400' : accion.variacion_promedio < 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-400 dark:text-slate-500'}">
-                            ${accion.variacion_promedio > 0 ? '+' : ''}${accion.variacion_promedio}%
-                        </span>
-                    </div>
-                </div>
-                <div class="text-xs text-green-600 dark:text-green-400 font-bold">
-                    Seleccionar
-                </div>
-            `;
-            
-            item.addEventListener('click', function() {
-                simboloInput.value = accion.simbolo;
-                sugerenciasContainer.classList.add('hidden');
-                accionesCount.textContent = `✅ Seleccionado: ${accion.simbolo} (${accion.tendencia})`;
-                simboloInput.focus();
-            });
-            
-            sugerenciasContainer.appendChild(item);
-        });
-        
-        // Agregar contador
-        const contador = document.createElement('div');
-        contador.className = 'p-2 text-xs text-center text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800';
-        contador.textContent = `${sugerencias.length} de ${accionesActivas.length} acciones coinciden`;
-        sugerenciasContainer.appendChild(contador);
-        
-        sugerenciasContainer.classList.remove('hidden');
-    }
-    
-    // Función para mostrar todas las acciones activas
-    function mostrarTodasAccionesActivas() {
-        if (accionesActivas.length === 0) {
-            sugerenciasContainer.classList.add('hidden');
-            return;
-        }
-        
-        sugerenciasContainer.innerHTML = '';
-        
-        // Encabezado con estadísticas
-        const itemHeader = document.createElement('div');
-        itemHeader.className = 'p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-b border-slate-200 dark:border-slate-700';
-        itemHeader.innerHTML = `
-            <div class="text-sm font-black text-slate-700 dark:text-slate-300 uppercase mb-1">
-                🎯 Acciones Activas - Último Mes
-            </div>
-            <div class="text-xs text-slate-600 dark:text-slate-400 mb-2">
-                ${accionesActivas.length} acciones con actividad reciente
-            </div>
-            <div class="flex gap-3 text-xs">
-                <div class="flex items-center gap-1">
-                    <span class="text-green-600">📈</span>
-                    <span>${accionesActivas.filter(a => a.tendencia === 'alza').length} en alza</span>
-                </div>
-                <div class="flex items-center gap-1">
-                    <span class="text-red-600">📉</span>
-                    <span>${accionesActivas.filter(a => a.tendencia === 'baja').length} en baja</span>
-                </div>
-                <div class="flex items-center gap-1">
-                    <span class="text-blue-600">⚖️</span>
-                    <span>${accionesActivas.filter(a => a.tendencia === 'estable').length} estables</span>
-                </div>
-            </div>
-        `;
-        sugerenciasContainer.appendChild(itemHeader);
-        
-        // Mostrar todas las acciones activas, agrupadas por tendencia
-        const grupos = {
-            'alza': accionesActivas.filter(a => a.tendencia === 'alza'),
-            'estable': accionesActivas.filter(a => a.tendencia === 'estable'),
-            'baja': accionesActivas.filter(a => a.tendencia === 'baja')
-        };
-        
-        // Ordenar cada grupo por días activos
-        Object.entries(grupos).forEach(([tendencia, accionesGrupo]) => {
-            if (accionesGrupo.length === 0) return;
-            
-            const titulo = document.createElement('div');
-            let tituloTexto = '';
-            let colorClase = '';
-            
-            if (tendencia === 'alza') {
-                tituloTexto = '📈 En Alza';
-                colorClase = 'text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20';
-            } else if (tendencia === 'baja') {
-                tituloTexto = '📉 En Baja';
-                colorClase = 'text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
-            } else {
-                tituloTexto = '⚖️ Estables';
-                colorClase = 'text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20';
-            }
-            
-            titulo.className = `p-3 text-xs font-bold ${colorClase} border-b border-slate-200 dark:border-slate-700`;
-            titulo.textContent = `${tituloTexto} (${accionesGrupo.length})`;
-            sugerenciasContainer.appendChild(titulo);
-            
-            accionesGrupo.forEach(accion => {
-                const item = document.createElement('div');
-                item.className = 'flex items-center gap-3 p-3 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700 last:border-b-0 transition-colors';
-                
-                let colorVar = '';
-                if (accion.variacion_promedio > 0) {
-                    colorVar = 'text-green-600 dark:text-green-400';
-                } else if (accion.variacion_promedio < 0) {
-                    colorVar = 'text-red-600 dark:text-red-400';
-                } else {
-                    colorVar = 'text-slate-400 dark:text-slate-500';
-                }
-                
-                item.innerHTML = `
-                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center p-1">
-                        <img src="/static/img/logos/${accion.simbolo}.png" 
-                             onerror="this.src='https://ui-avatars.com/api/?name=${accion.simbolo}&background=16a34a&color=fff&bold=true&size=256';" 
-                             class="w-8 h-8 object-contain">
-                    </div>
-                    <div class="flex-1">
-                        <div class="font-black text-slate-800 dark:text-white uppercase">${accion.simbolo}</div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400 truncate max-w-[200px]">${accion.nombre || accion.simbolo}</div>
-                        <div class="flex items-center gap-3 mt-1">
-                            <span class="text-[10px] text-slate-400 dark:text-slate-500">${accion.dias_activos} días</span>
-                            <span class="text-[10px] ${colorVar}">
-                                ${accion.variacion_promedio > 0 ? '+' : ''}${accion.variacion_promedio}%
-                            </span>
-                        </div>
-                    </div>
-                `;
-                
-                item.addEventListener('click', function() {
-                    simboloInput.value = accion.simbolo;
-                    sugerenciasContainer.classList.add('hidden');
-                    accionesCount.textContent = `✅ Seleccionado: ${accion.simbolo}`;
-                    simboloInput.focus();
-                });
-                
-                sugerenciasContainer.appendChild(item);
-            });
-        });
-        
-        // Pie de página
-        const pie = document.createElement('div');
-        pie.className = 'p-3 text-center text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-800';
-        pie.textContent = '💡 Escribe para filtrar por símbolo o nombre';
-        sugerenciasContainer.appendChild(pie);
-        
-        sugerenciasContainer.classList.remove('hidden');
-    }
-    
-    // Event listeners
-    simboloInput.addEventListener('input', function() {
-        mostrarSugerencias(this.value);
-    });
-    
-    simboloInput.addEventListener('focus', async function() {
-        if (accionesActivas.length === 0 && !cargandoAcciones) {
-            await cargarAccionesActivas();
-        }
-        
-        if (!this.value.trim()) {
-            mostrarTodasAccionesActivas();
-        } else {
-            mostrarSugerencias(this.value);
-        }
-    });
-    
-    // Ocultar lista al hacer clic fuera
-    document.addEventListener('click', function(event) {
-        if (!simboloInput.contains(event.target) && !sugerenciasContainer.contains(event.target)) {
-            sugerenciasContainer.classList.add('hidden');
-        }
-    });
-    
-    // Manejar teclas
-    simboloInput.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            sugerenciasContainer.classList.add('hidden');
-        }
-        if (event.key === 'ArrowDown' && sugerenciasContainer.classList.contains('hidden')) {
-            sugerenciasContainer.classList.remove('hidden');
-            mostrarTodasAccionesActivas();
-        }
-    });
-    
-    // Mostrar todas las acciones al hacer clic en el input si está vacío
-    simboloInput.addEventListener('click', async function() {
-        if (accionesActivas.length === 0 && !cargandoAcciones) {
-            await cargarAccionesActivas();
-        }
-        
-        if (!this.value.trim()) {
-            mostrarTodasAccionesActivas();
-        }
-    });
-    
-    // Cargar acciones automáticamente después de un breve retraso
-    setTimeout(() => {
-        if (simboloInput && !cargandoAcciones && accionesActivas.length === 0) {
-            cargarAccionesActivas();
-        }
-    }, 300);
-});
-
-// Agregar estilos CSS para el gráfico
-const style = document.createElement('style');
-style.textContent = `
-.chart-container {
-    position: relative;
-    width: 100%;
-}
-
-/* Estilos para tooltips */
-.chartjs-tooltip {
-    border-radius: 8px !important;
-    padding: 12px !important;
-    background-color: rgba(15, 23, 42, 0.95) !important;
-    border: 1px solid #475569 !important;
-    backdrop-filter: blur(10px);
-}
-
-.chartjs-tooltip-key {
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    margin-right: 8px;
-    border-radius: 2px;
-}
-
-/* Mejoras de accesibilidad */
-@media (prefers-reduced-motion: reduce) {
-    .chart-container {
-        animation: none;
-    }
-}
-
-/* Animaciones suaves */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-.bg-white, .bg-slate-50, .chart-container {
-    animation: fadeIn 0.5s ease-out;
-}
-
-/* Estilos para vista previa de imagen compartible */
-#analisisPreviewContainer {
-    animation: slideDown 0.3s ease-out;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-#canvasAnalisisPreview {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Botón de compartir con animación */
-#compartirAnalisisBtn {
-    position: relative;
-    overflow: hidden;
-}
-
-#compartirAnalisisBtn:active {
-    transform: scale(0.95);
-}
-
-/* Efecto de brillo en hover */
-#compartirAnalisisBtn:hover::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        to bottom right,
-        rgba(255, 255, 255, 0.1) 0%,
-        rgba(255, 255, 255, 0.2) 50%,
-        rgba(255, 255, 255, 0.1) 100%
-    );
-    transform: rotate(30deg);
-    animation: shine 1.5s infinite;
-}
-
-@keyframes shine {
-    0% {
-        transform: translateX(-100%) translateY(-100%) rotate(30deg);
-    }
-    100% {
-        transform: translateX(100%) translateY(100%) rotate(30deg);
-    }
-}
-`;
-document.head.appendChild(style);
 </script>
 
 {% else %}
 <!-- Mensaje cuando no hay datos -->
-<div class="text-center py-20 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800/50 dark:to-slate-900/30 rounded-3xl border-2 border-dashed border-slate-300 dark:border-slate-700">
-    <div class="text-6xl mb-4 animate-bounce">📈</div>
-    <h3 class="text-xl font-black">Sin datos históricos para mostrar</h3>
-    <p class="text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-2">
+<div class="text-center py-12 md:py-20 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800/50 dark:to-slate-900/30 rounded-xl md:rounded-3xl border-2 border-dashed border-slate-300 dark:border-slate-700 px-4">
+    <div class="text-5xl md:text-6xl mb-4 animate-bounce">📈</div>
+    <h3 class="text-lg md:text-xl font-black">Sin datos históricos para mostrar</h3>
+    <p class="text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto mt-2">
         {% if simbolo %}
-        No se encontraron registros para el símbolo 
-        <span class="text-green-600 dark:text-green-400 font-bold">{{ simbolo }}</span> 
-        en el período del 
-        <span class="text-blue-600 dark:text-blue-400 font-bold">{{ fecha_desde_formato }}</span> 
-        al 
-        <span class="text-blue-600 dark:text-blue-400 font-bold">{{ fecha_hasta_formato }}</span>.
+        No se encontraron registros para {{ simbolo }} en el período seleccionado.
         {% else %}
         Ingresa un símbolo y selecciona un rango de fechas para consultar el histórico.
         {% endif %}
     </p>
     
-    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-lg mx-auto">
-        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/10 p-4 rounded-xl border border-blue-200 dark:border-blue-800/30">
-            <span class="text-2xl">🔍</span>
-            <p class="text-sm font-bold mt-2">Busca por Símbolo</p>
-            <p class="text-xs text-slate-500">Ej: ARCA, BFR, RST</p>
+    <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-3 max-w-lg mx-auto">
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/10 p-3 rounded-xl border border-blue-200 dark:border-blue-800/30">
+            <span class="text-xl">🔍</span>
+            <p class="text-xs font-bold mt-1">Busca por Símbolo</p>
         </div>
-        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/10 p-4 rounded-xl border border-green-200 dark:border-green-800/30">
-            <span class="text-2xl">📅</span>
-            <p class="text-sm font-bold mt-2">Selecciona Fechas</p>
-            <p class="text-xs text-slate-500">Desde - Hasta</p>
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/10 p-3 rounded-xl border border-green-200 dark:border-green-800/30">
+            <span class="text-xl">📅</span>
+            <p class="text-xs font-bold mt-1">Selecciona Fechas</p>
         </div>
-        <div class="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/10 p-4 rounded-xl border border-purple-200 dark:border-purple-800/30">
-            <span class="text-2xl">📊</span>
-            <p class="text-sm font-bold mt-2">Visualiza Gráficos</p>
-            <p class="text-xs text-slate-500">Tendencias y estadísticas</p>
+        <div class="col-span-2 md:col-span-1 bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/10 p-3 rounded-xl border border-purple-200 dark:border-purple-800/30">
+            <span class="text-xl">📊</span>
+            <p class="text-xs font-bold mt-1">Visualiza Gráficos</p>
         </div>
     </div>
 </div>
 {% endif %}
+
+<!-- CSS adicional para responsividad -->
+<style>
+/* Mejoras para móvil */
+@media (max-width: 768px) {
+    .chart-container {
+        margin: 0 -0.5rem;
+        padding: 0 0.5rem;
+    }
+    
+    /* Mejorar toques */
+    button, a, [role="button"] {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+    
+    /* Optimizar fuentes para móvil */
+    body {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+    
+    /* Ajustar contenedores */
+    .max-w-6xl {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+}
+
+/* Mejoras para tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .max-w-6xl {
+        max-width: 90%;
+    }
+}
+
+/* Asegurar que las tablas sean desplazables en móvil */
+.overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Optimizar imágenes */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Ajustar alturas mínimas para elementos interactivos */
+button, .btn, a[role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+}
+</style>
 
 {% endblock %}
