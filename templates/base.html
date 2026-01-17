@@ -17,31 +17,159 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-300">
 
- <!-- En el nav de base.html, actualizar el div con los enlaces -->
-<nav class="bg-green-700 dark:bg-green-900 text-white p-4 shadow-lg sticky top-0 z-50">
-    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0">
-        <div class="flex items-center gap-2">
-            <div class="w-8 h-8 bg-white rounded flex items-center justify-center text-green-700 font-black">B</div>
-            <h1 class="font-black tracking-tighter text-lg md:text-xl uppercase truncate">
-                BVC<span class="text-green-300 hidden sm:inline"> - GenaroCoin - Invierte en Venezuela</span>
-                <span class="text-green-300 text-xs sm:hidden">G-Coin</span>
-            </h1>
+    <!-- Navbar principal -->
+    <nav class="bg-green-700 dark:bg-green-900 text-white p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <button onclick="toggleMenu()" class="md:hidden p-2 hover:bg-green-800 rounded-lg transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                <div class="w-8 h-8 bg-white rounded flex items-center justify-center text-green-700 font-black">B</div>
+                <h1 class="font-black tracking-tighter text-lg md:text-xl uppercase hidden sm:block">
+                    BVC<span class="text-green-300"> - GenaroCoin</span>
+                </h1>
+                <h1 class="font-black tracking-tighter text-lg md:text-xl uppercase sm:hidden">
+                    BVC<span class="text-green-300"> - GC</span>
+                </h1>
+            </div>
+            
+            <!-- Menú desktop -->
+            <div class="hidden md:flex gap-6 items-center">
+                <a href="/" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">Inicio</a>
+                <a href="/consulta" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">Histórico</a>
+                <a href="/rankings" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">📊 Ranking</a>
+                <a href="/indices" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">📊 Indice</a>
+                <a href="/admin/ingreso-manual" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">📝 Manual</a>
+                <a href="/admin/dolar-bcv" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">💰 $BCV</a>
+                <button onclick="alternarTema()" class="bg-white/20 p-2 rounded-lg hover:bg-white/30 transition-all text-sm">🌓</button>
+            </div>
+            
+            <!-- Botón tema móvil -->
+            <div class="flex md:hidden items-center gap-2">
+                <button onclick="alternarTema()" class="bg-white/20 p-2 rounded-lg hover:bg-white/30 transition-all text-sm">🌓</button>
+            </div>
         </div>
-        <div class="flex flex-wrap gap-2 md:gap-6 items-center justify-center">
-            <a href="/" class="hover:text-green-200 font-bold transition-colors text-sm md:text-base px-2 py-1 rounded hover:bg-green-800">Inicio</a>
-            <a href="/consulta" class="hover:text-green-200 font-bold transition-colors text-sm md:text-base px-2 py-1 rounded hover:bg-green-800">Histórico</a>
-            <a href="/rankings" class="hover:text-green-200 font-bold transition-colors text-sm md:text-base px-2 py-1 rounded hover:bg-green-800">📊 Ranking</a>
-            <a href="/indices" class="hover:text-green-200 font-bold transition-colors text-sm md:text-base px-2 py-1 rounded hover:bg-green-800">📊 Indice</a>
-            <a href="/admin/ingreso-manual" class="hover:text-green-200 font-bold transition-colors text-sm md:text-base px-2 py-1 rounded hover:bg-green-800">📝 Manual</a>
-            <a href="/admin/dolar-bcv" class="hover:text-green-200 font-bold transition-colors text-sm md:text-base px-2 py-1 rounded hover:bg-green-800">💰 $BCV</a>
-            <button onclick="alternarTema()" class="bg-white/20 p-2 rounded-lg hover:bg-white/30 transition-all text-sm">🌓</button>
+    </nav>
+
+    <!-- Menú lateral móvil -->
+    <div id="mobileMenu" class="fixed inset-0 z-50 transform translate-x-full transition-transform duration-300 ease-in-out md:hidden">
+        <!-- Overlay oscuro -->
+        <div class="absolute inset-0 bg-black/50" onclick="closeMenu()"></div>
+        
+        <!-- Panel lateral -->
+        <div class="absolute right-0 top-0 h-full w-80 max-w-[90%] bg-white dark:bg-slate-900 shadow-2xl flex flex-col">
+            <!-- Cabecera del menú -->
+            <div class="bg-green-700 dark:bg-green-900 p-6 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-white rounded flex items-center justify-center text-green-700 font-black text-lg">B</div>
+                    <div>
+                        <h2 class="font-black text-white text-lg">BVC - GenaroCoin</h2>
+                        <p class="text-green-200 text-xs">Invierte en Venezuela</p>
+                    </div>
+                </div>
+                <button onclick="closeMenu()" class="text-white hover:text-green-200 p-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Navegación -->
+            <div class="flex-1 overflow-y-auto py-4">
+                <div class="space-y-1 px-2">
+                    <a href="/" class="flex items-center gap-3 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onclick="closeMenu()">
+                        <span class="text-green-600 dark:text-green-400">🏠</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">Inicio</span>
+                        <span class="ml-auto text-xs text-slate-500">Panel principal</span>
+                    </a>
+                    
+                    <a href="/consulta" class="flex items-center gap-3 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onclick="closeMenu()">
+                        <span class="text-blue-600 dark:text-blue-400">📈</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">Análisis Histórico</span>
+                        <span class="ml-auto text-xs text-slate-500">Consultas</span>
+                    </a>
+                    
+                    <a href="/rankings" class="flex items-center gap-3 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onclick="closeMenu()">
+                        <span class="text-purple-600 dark:text-purple-400">🏆</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">Rankings</span>
+                        <span class="ml-auto text-xs text-slate-500">Comparativas</span>
+                    </a>
+                    
+                    <a href="/indices" class="flex items-center gap-3 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onclick="closeMenu()">
+                        <span class="text-amber-600 dark:text-amber-400">📊</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">Índice vs Dólar</span>
+                        <span class="ml-auto text-xs text-slate-500">IBC vs $BCV</span>
+                    </a>
+                    
+                    <div class="my-4 px-4">
+                        <div class="h-px bg-slate-200 dark:bg-slate-700"></div>
+                    </div>
+                    
+                    <div class="px-4 mb-2">
+                        <p class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Administración</p>
+                    </div>
+                    
+                    <a href="/admin/ingreso-manual" class="flex items-center gap-3 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onclick="closeMenu()">
+                        <span class="text-yellow-600 dark:text-yellow-400">📝</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">Ingreso Manual</span>
+                        <span class="ml-auto text-xs text-slate-500">Datos</span>
+                    </a>
+                    
+                    <a href="/admin/dolar-bcv" class="flex items-center gap-3 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onclick="closeMenu()">
+                        <span class="text-green-600 dark:text-green-400">💰</span>
+                        <span class="font-bold text-slate-800 dark:text-slate-200">Dólar BCV</span>
+                        <span class="ml-auto text-xs text-slate-500">Tasas</span>
+                    </a>
+                </div>
+                
+                <!-- Información adicional -->
+                <div class="mt-8 px-4">
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="text-lg">⚡</span>
+                            <p class="text-sm font-bold text-slate-700 dark:text-slate-300">Accesos Rápidos</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="/consulta?simbolo=ARCA&fecha_desde={{ ahora|date('Y-m-d', -30) }}&fecha_hasta={{ ahora|date('Y-m-d') }}" 
+                               class="text-xs p-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg text-center hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors" onclick="closeMenu()">
+                                ARCA (30d)
+                            </a>
+                            <a href="/consulta?simbolo=BFR&fecha_desde={{ ahora|date('Y-m-d', -30) }}&fecha_hasta={{ ahora|date('Y-m-d') }}" 
+                               class="text-xs p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg text-center hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors" onclick="closeMenu()">
+                                BFR (30d)
+                            </a>
+                            <a href="/rankings?fecha_desde={{ ahora|date('Y-m-d', -30) }}&fecha_hasta={{ ahora|date('Y-m-d') }}" 
+                               class="text-xs p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-lg text-center hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors" onclick="closeMenu()">
+                                Rankings Mes
+                            </a>
+                            <a href="/indices?fecha_desde={{ ahora|date('Y-m-d', -90) }}&fecha_hasta={{ ahora|date('Y-m-d') }}" 
+                               class="text-xs p-2 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-lg text-center hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors" onclick="closeMenu()">
+                                Índice 90d
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pie del menú -->
+            <div class="border-t border-slate-200 dark:border-slate-700 p-4">
+                <div class="text-center">
+                    <p class="text-xs text-slate-500 dark:text-slate-400">
+                        © {{ now().year }} BVC NoSQL Data System
+                    </p>
+                    <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
+                        v2.0 • Análisis bursátil
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
-</nav>
 
-<main class="max-w-6xl mx-auto p-3 md:p-8">
-    {% block content %}{% endblock %}
-</main>
+    <main class="max-w-6xl mx-auto p-4 md:p-8">
+        {% block content %}{% endblock %}
+    </main>
 
     <footer class="text-center py-8 opacity-50">
         <p class="text-[10px] font-black uppercase tracking-widest">
@@ -49,6 +177,120 @@
         </p>
     </footer>
 
-</body>
+    <script>
+        // Funciones para el menú móvil
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('translate-x-full');
+            document.body.style.overflow = menu.classList.contains('translate-x-full') ? 'auto' : 'hidden';
+        }
+        
+        function closeMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.add('translate-x-full');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Cerrar menú con Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+        
+        // Cerrar menú al hacer clic fuera en móvil
+        document.addEventListener('touchstart', (e) => {
+            const menu = document.getElementById('mobileMenu');
+            const menuContent = menu.querySelector('div.bg-white, div.dark\\:bg-slate-900');
+            const hamburger = document.querySelector('button[onclick="toggleMenu()"]');
+            
+            if (!menu.classList.contains('translate-x-full') && 
+                !menuContent.contains(e.target) && 
+                !hamburger.contains(e.target)) {
+                closeMenu();
+            }
+        });
+        
+        // Cerrar menú al cambiar a desktop
+        function handleResize() {
+            if (window.innerWidth >= 768) {
+                closeMenu();
+            }
+        }
+        
+        window.addEventListener('resize', handleResize);
+        
+        // Cerrar automáticamente al navegar en móvil
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+    </script>
+    
+    <style>
+        /* Mejoras para el menú móvil */
+        #mobileMenu {
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Animación suave para el overlay */
+        #mobileMenu > div:first-child {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Prevenir scroll cuando el menú está abierto */
+        body.menu-open {
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+        
+        /* Mejoras para el scroll en el menú */
+        #mobileMenu .overflow-y-auto {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+        
+        #mobileMenu .overflow-y-auto::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        #mobileMenu .overflow-y-auto::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        #mobileMenu .overflow-y-auto::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 2px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Mejoras de toque para móvil */
+        @media (max-width: 768px) {
+            button, a[role="button"] {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            /* Suavizar animaciones en móvil */
+            * {
+                -webkit-tap-highlight-color: transparent;
+            }
+        }
+        
+        /* Efecto hover para enlaces del menú */
+        #mobileMenu a {
+            transition: all 0.2s ease;
+        }
+        
+        #mobileMenu a:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+    </style>
 
+</body>
 </html>
