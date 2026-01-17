@@ -41,8 +41,8 @@
                 <a href="/consulta" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">Histórico</a>
                 <a href="/rankings" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">📊 Ranking</a>
                 <a href="/indices" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">📊 Indice</a>
-                <a href="/admin/ingreso-manual" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">📝 Manual</a>
-                <a href="/admin/dolar-bcv" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">💰 $BCV</a>
+               <!-- <a href="/admin/ingreso-manual" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">📝 Manual</a> -->
+               <!-- <a href="/admin/dolar-bcv" class="hover:text-green-200 font-bold transition-colors text-sm lg:text-base">💰 $BCV</a> -->
                 <button onclick="alternarTema()" class="bg-white/20 p-2 rounded-lg hover:bg-white/30 transition-all text-sm">🌓</button>
             </div>
             
@@ -111,21 +111,21 @@
                         <p class="text-xs font-bold uppercase text-slate-500 dark:text-slate-400 tracking-wider">Administración</p>
                     </div>
                     
-                    <a href="/admin/ingreso-manual" class="flex items-center gap-3 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onclick="closeMenu()">
+                   <!--  <a href="/admin/ingreso-manual" class="flex items-center gap-3 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onclick="closeMenu()">
                         <span class="text-yellow-600 dark:text-yellow-400">📝</span>
                         <span class="font-bold text-slate-800 dark:text-slate-200">Ingreso Manual</span>
                         <span class="ml-auto text-xs text-slate-500">Datos</span>
-                    </a>
+                    </a>-->
                     
-                    <a href="/admin/dolar-bcv" class="flex items-center gap-3 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onclick="closeMenu()">
+                  <!--   <a href="/admin/dolar-bcv" class="flex items-center gap-3 p-4 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" onclick="closeMenu()">
                         <span class="text-green-600 dark:text-green-400">💰</span>
                         <span class="font-bold text-slate-800 dark:text-slate-200">Dólar BCV</span>
                         <span class="ml-auto text-xs text-slate-500">Tasas</span>
                     </a>
-                </div>
+                </div>-->
                 
                 <!-- Información adicional -->
-                <div class="mt-8 px-4">
+                <<div class="mt-8 px-4">
                     <div class="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4">
                         <div class="flex items-center gap-2 mb-3">
                             <span class="text-lg">⚡</span>
@@ -133,14 +133,7 @@
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <!-- Usaremos JavaScript para generar las fechas dinámicamente -->
-                            <a href="/consulta?simbolo=ARCA&fecha_desde=2025-12-18&fecha_hasta=2026-01-16" 
-                               class="text-xs p-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg text-center hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors" onclick="closeMenu()">
-                                ARCA (30d)
-                            </a>
-                            <a href="/consulta?simbolo=BFR&fecha_desde=2025-12-18&fecha_hasta=2026-01-16" 
-                               class="text-xs p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg text-center hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors" onclick="closeMenu()">
-                                BFR (30d)
-                            </a>
+                            
                             <a href="/rankings?fecha_desde=2025-12-18&fecha_hasta=2026-01-16" 
                                class="text-xs p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-lg text-center hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors" onclick="closeMenu()">
                                 Rankings Mes
@@ -158,7 +151,7 @@
             <div class="border-t border-slate-200 dark:border-slate-700 p-4">
                 <div class="text-center">
                     <p class="text-xs text-slate-500 dark:text-slate-400">
-                        © 2026 BVC NoSQL Data System
+                        © 2026 @GenaroCoin
                     </p>
                     <p class="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
                         v2.0 • Análisis bursátil
@@ -174,7 +167,7 @@
 
     <footer class="text-center py-8 opacity-50">
         <p class="text-[10px] font-black uppercase tracking-widest">
-            © 2026 BVC NoSQL Data System
+            © 2026 @GenaroCoin
         </p>
     </footer>
 
@@ -327,4 +320,5 @@
 
 </body>
 </html>
+
 
