@@ -1,0 +1,317 @@
+<!-- templates/ingreso_manual.html -->
+{% extends "base.html" %}
+
+{% block title %}Ingreso Manual de Datos{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h2 class="text-3xl font-black">📝 Ingreso Manual de Datos</h2>
+    <p class="text-slate-500 font-bold uppercase text-xs tracking-widest">
+        Sistema de respaldo para cuando no hay datos automáticos disponibles
+    </p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <!-- Formulario de fecha -->
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+        <h3 class="text-xl font-black mb-4 text-blue-600 dark:text-blue-400">1. Seleccionar Fecha</h3>
+        
+        <form method="GET" class="space-y-4">
+            <div>
+                <label class="block text-sm font-bold mb-2">Fecha para ingresar datos</label>
+                <input type="date" name="fecha" id="fechaInput" 
+                       class="w-full p-3 rounded-xl border dark:bg-slate-900 dark:border-slate-600 font-bold"
+                       required>
+            </div>
+            
+            <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-transform active:scale-95 uppercase text-sm">
+                Verificar/Crear Formulario
+            </button>
+        </form>
+        
+        {% if fecha_seleccionada %}
+        <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+            <h4 class="font-black text-blue-700 dark:text-blue-300">Fecha seleccionada:</h4>
+            <p class="text-lg font-bold">{{ fecha_seleccionada }}</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">
+                Formato: {{ fecha_formateada }}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Información de datos existentes -->
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-700">
+        <h3 class="text-xl font-black mb-4 text-green-600 dark:text-green-400">2. Estado de Datos</h3>
+        
+        {% if estado_datos %}
+        <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 rounded-lg 
+                {% if estado_datos.automatico %}bg-green-100 dark:bg-green-900/30{% else %}bg-yellow-100 dark:bg-yellow-900/30{% endif %}">
+                <div>
+                    <span class="font-bold">Datos Automáticos:</span>
+                    <span class="ml-2">
+                        {% if estado_datos.automatico %}
+                        ✅ Disponibles ({{ estado_datos.total_automatico }} registros)
+                        {% else %}
+                        ⚠️ No disponibles
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between p-4 rounded-lg 
+                {% if estado_datos.manual %}bg-blue-100 dark:bg-blue-900/30{% else %}bg-gray-100 dark:bg-gray-900/30{% endif %}">
+                <div>
+                    <span class="font-bold">Datos Manuales:</span>
+                    <span class="ml-2">
+                        {% if estado_datos.manual %}
+                        📝 Existen ({{ estado_datos.total_manual }} registros)
+                        {% else %}
+                        📋 Sin datos manuales
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            {% if estado_datos.automatico %}
+            <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                <p class="text-sm text-yellow-700 dark:text-yellow-300">
+                    ⚠️ <strong>Nota:</strong> Esta fecha ya tiene datos automáticos disponibles.
+                    Los datos manuales solo se usarán si los automáticos fallan.
+                </p>
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="text-center py-8">
+            <div class="text-4xl mb-4">📅</div>
+            <p class="text-slate-500 dark:text-slate-400">
+                Selecciona una fecha para ver el estado de los datos
+            </p>
+        </div>
+        {% endif %}
+        
+        <div class="mt-6">
+            <h4 class="font-bold mb-2">Fechas con datos manuales:</h4>
+            {% if fechas_manuales %}
+            <div class="max-h-48 overflow-y-auto">
+                {% for fecha in fechas_manuales %}
+                <div class="flex items-center justify-between p-3 border-b dark:border-slate-700">
+                    <span>{{ fecha[:4] }}-{{ fecha[4:6] }}-{{ fecha[6:] }}</span>
+                    <div class="flex gap-2">
+                        <a href="/admin/ingreso-manual?fecha={{ fecha[:4] }}-{{ fecha[4:6] }}-{{ fecha[6:] }}"
+                           class="text-blue-600 dark:text-blue-400 hover:underline text-sm">
+                            Editar
+                        </a>
+                        <a href="/admin/eliminar-manual/{{ fecha }}"
+                           onclick="return confirm('¿Eliminar datos manuales para esta fecha?')"
+                           class="text-red-600 dark:text-red-400 hover:underline text-sm">
+                            Eliminar
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-slate-500 dark:text-slate-400 text-sm italic">
+                No hay fechas con datos manuales registrados
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if mostrar_formulario %}
+<!-- Formulario para ingresar datos -->
+<div class="mt-8 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700">
+    <h3 class="text-xl font-black mb-6 text-purple-600 dark:text-purple-400">3. Ingresar Datos Manuales</h3>
+    
+    <form method="POST" action="/admin/guardar-manual" id="formularioManual">
+        <input type="hidden" name="fecha" value="{{ fecha_formateada }}">
+        
+        <!-- Índice General -->
+        <div class="mb-8 p-6 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-2xl">
+            <h4 class="text-lg font-black mb-4 text-purple-700 dark:text-purple-300">Índice General</h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold mb-2">Valor del Índice</label>
+                    <input type="number" step="0.01" name="indice_valor" 
+                           class="w-full p-3 rounded-xl border dark:bg-slate-900 dark:border-slate-600"
+                           placeholder="Ej: 1250.75" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-2">Variación (%)</label>
+                    <input type="number" step="0.01" name="indice_variacion" 
+                           class="w-full p-3 rounded-xl border dark:bg-slate-900 dark:border-slate-600"
+                           placeholder="Ej: 0.45" required>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Lista de Acciones -->
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-4">
+                <h4 class="text-lg font-black text-purple-700 dark:text-purple-300">Acciones</h4>
+                <button type="button" onclick="agregarFila()" 
+                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-bold text-sm">
+                    + Agregar Acción
+                </button>
+            </div>
+            
+            <div id="listaAcciones" class="space-y-4">
+                <!-- Las filas se agregarán aquí dinámicamente -->
+                {% if datos_existentes %}
+                    {% for accion in datos_existentes %}
+                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 border dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+                        <div>
+                            <label class="block text-xs font-bold mb-1">Símbolo</label>
+                            <input type="text" name="simbolo[]" value="{{ accion.simbolo }}"
+                                   class="w-full p-2 rounded-lg border dark:bg-slate-800" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1">Precio Anterior</label>
+                            <input type="number" step="0.01" name="anterior[]" value="{{ accion.anterior }}"
+                                   class="w-full p-2 rounded-lg border dark:bg-slate-800" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1">Precio Hoy</label>
+                            <input type="number" step="0.01" name="hoy[]" value="{{ accion.hoy }}"
+                                   class="w-full p-2 rounded-lg border dark:bg-slate-800" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1">Cantidad</label>
+                            <input type="number" name="cantidad[]" value="{{ accion.cantidad }}"
+                                   class="w-full p-2 rounded-lg border dark:bg-slate-800" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1">Monto</label>
+                            <input type="number" step="0.01" name="monto[]" value="{{ accion.monto }}"
+                                   class="w-full p-2 rounded-lg border dark:bg-slate-800" required>
+                        </div>
+                        <div class="flex items-end">
+                            <button type="button" onclick="eliminarFila(this)" 
+                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <!-- Fila inicial -->
+                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 border dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50">
+                        <div>
+                            <label class="block text-xs font-bold mb-1">Símbolo</label>
+                            <input type="text" name="simbolo[]" 
+                                   class="w-full p-2 rounded-lg border dark:bg-slate-800" placeholder="Ej: ARCA" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1">Precio Anterior</label>
+                            <input type="number" step="0.01" name="anterior[]" 
+                                   class="w-full p-2 rounded-lg border dark:bg-slate-800" placeholder="Ej: 100.50" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1">Precio Hoy</label>
+                            <input type="number" step="0.01" name="hoy[]" 
+                                   class="w-full p-2 rounded-lg border dark:bg-slate-800" placeholder="Ej: 102.75" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1">Cantidad</label>
+                            <input type="number" name="cantidad[]" 
+                                   class="w-full p-2 rounded-lg border dark:bg-slate-800" placeholder="Ej: 10000" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold mb-1">Monto</label>
+                            <input type="number" step="0.01" name="monto[]" 
+                                   class="w-full p-2 rounded-lg border dark:bg-slate-800" placeholder="Ej: 1027500.00" required>
+                        </div>
+                        <div class="flex items-end">
+                            <button type="button" onclick="eliminarFila(this)" 
+                                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Botones de acción -->
+        <div class="flex gap-4">
+            <button type="submit" 
+                    class="bg-purple-600 hover:bg-purple-700 text-white font-black py-3 px-8 rounded-xl transition-transform active:scale-95 uppercase">
+                💾 Guardar Datos Manuales
+            </button>
+            <a href="/admin/ingreso-manual" 
+               class="bg-slate-600 hover:bg-slate-700 text-white font-black py-3 px-8 rounded-xl transition-transform active:scale-95 uppercase">
+                Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+<script>
+// JavaScript para manejar el formulario dinámico
+let contadorFilas = 1;
+
+function agregarFila() {
+    contadorFilas++;
+    const lista = document.getElementById('listaAcciones');
+    
+    const nuevaFila = document.createElement('div');
+    nuevaFila.className = 'grid grid-cols-1 md:grid-cols-6 gap-4 p-4 border dark:border-slate-700 rounded-xl bg-slate-50 dark:bg-slate-900/50';
+    nuevaFila.innerHTML = `
+        <div>
+            <label class="block text-xs font-bold mb-1">Símbolo</label>
+            <input type="text" name="simbolo[]" class="w-full p-2 rounded-lg border dark:bg-slate-800" placeholder="Ej: ARCA" required>
+        </div>
+        <div>
+            <label class="block text-xs font-bold mb-1">Precio Anterior</label>
+            <input type="number" step="0.01" name="anterior[]" class="w-full p-2 rounded-lg border dark:bg-slate-800" placeholder="Ej: 100.50" required>
+        </div>
+        <div>
+            <label class="block text-xs font-bold mb-1">Precio Hoy</label>
+            <input type="number" step="0.01" name="hoy[]" class="w-full p-2 rounded-lg border dark:bg-slate-800" placeholder="Ej: 102.75" required>
+        </div>
+        <div>
+            <label class="block text-xs font-bold mb-1">Cantidad</label>
+            <input type="number" name="cantidad[]" class="w-full p-2 rounded-lg border dark:bg-slate-800" placeholder="Ej: 10000" required>
+        </div>
+        <div>
+            <label class="block text-xs font-bold mb-1">Monto</label>
+            <input type="number" step="0.01" name="monto[]" class="w-full p-2 rounded-lg border dark:bg-slate-800" placeholder="Ej: 1027500.00" required>
+        </div>
+        <div class="flex items-end">
+            <button type="button" onclick="eliminarFila(this)" 
+                    class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
+                Eliminar
+            </button>
+        </div>
+    `;
+    
+    lista.appendChild(nuevaFila);
+}
+
+function eliminarFila(boton) {
+    const fila = boton.closest('div.grid');
+    if (document.querySelectorAll('#listaAcciones > div').length > 1) {
+        fila.remove();
+    } else {
+        alert('Debe haber al menos una acción');
+    }
+}
+
+// Auto-calcular fecha si no se selecciona
+document.addEventListener('DOMContentLoaded', function() {
+    const fechaInput = document.getElementById('fechaInput');
+    if (fechaInput && !fechaInput.value) {
+        const hoy = new Date();
+        const fechaFormateada = hoy.toISOString().split('T')[0];
+        fechaInput.value = fechaFormateada;
+    }
+});
+</script>
+
+{% endblock %}

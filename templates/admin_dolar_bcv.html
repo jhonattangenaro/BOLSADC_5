@@ -1,0 +1,305 @@
+<!-- templates/admin_dolar_bcv.html -->
+{% extends "base.html" %}
+
+{% block title %}Administración Dólar BCV{% endblock %}
+
+{% block content %}
+<div class="mb-8">
+    <h2 class="text-3xl font-black italic uppercase tracking-tighter">💰 Administración Dólar BCV</h2>
+    <p class="text-slate-500 dark:text-slate-400 font-bold uppercase text-xs tracking-widest">
+        Gestión de tasas de cambio para comparación con acciones
+    </p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- Tarjeta de estado -->
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700">
+        <h3 class="text-xl font-black mb-4 flex items-center gap-2">
+            <span class="text-2xl">📊</span> Estado Actual
+        </h3>
+        
+        <div id="estadoContainer" class="space-y-3">
+            <div class="text-center py-8">
+                <div class="animate-spin text-2xl mb-2">⏳</div>
+                <p class="text-slate-500">Cargando estado...</p>
+            </div>
+        </div>
+        
+        <div class="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+            <button onclick="cargarEstado()" 
+                    class="w-full px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg font-bold transition-colors">
+                🔄 Actualizar Estado
+            </button>
+        </div>
+    </div>
+    
+    <!-- Tarjeta de carga -->
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700">
+        <h3 class="text-xl font-black mb-4 flex items-center gap-2">
+            <span class="text-2xl">📥</span> Cargar Datos
+        </h3>
+        
+        <div class="space-y-4">
+            <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/30 p-4 rounded-xl">
+                <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2">Requisitos</h4>
+                <ul class="text-sm text-slate-600 dark:text-slate-400 space-y-1">
+                    <li>✓ Archivo Excel: <code>dolar_bcv.xlsx</code></li>
+                    <li>✓ Columnas: <code>Fecha</code>, <code>Tasa</code>, <code>Variación</code></li>
+                    <li>✓ Formato fecha: <code>YYYYMMDD</code> (ej: 20251230)</li>
+                    <li>✓ Debe estar en la raíz del proyecto</li>
+                </ul>
+            </div>
+            
+            <div id="cargaResultado" class="hidden"></div>
+            
+            <button onclick="cargarDatosDolar()" 
+                    id="btnCargarDatos"
+                    class="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl transition-all active:scale-95 flex items-center justify-center gap-2">
+                <span>📥</span> Cargar Datos desde Excel
+            </button>
+            
+            <div class="mt-4 text-xs text-slate-500 dark:text-slate-400">
+                <p>Los datos se cargarán en la tabla <code>dolar_bcv</code> de SQLite.</p>
+                <p class="mt-1">Registros existentes se actualizarán automáticamente.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Información adicional -->
+<div class="bg-white dark:bg-slate-800 p-6 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700">
+    <h3 class="text-xl font-black mb-4 flex items-center gap-2">
+        <span class="text-2xl">💡</span> ¿Cómo funciona?
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/30 p-4 rounded-xl">
+            <h4 class="font-bold text-green-700 dark:text-green-400 mb-2">1. Conversión a USD</h4>
+            <p class="text-sm text-slate-600 dark:text-slate-400">
+                Precios en bolívares se convierten a dólares usando la tasa BCV del día.
+            </p>
+        </div>
+        
+        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/30 p-4 rounded-xl">
+            <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-2">2. Comparación %</h4>
+            <p class="text-sm text-slate-600 dark:text-slate-400">
+                Se compara la variación % de la acción vs variación % del dólar BCV.
+            </p>
+        </div>
+        
+        <div class="bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-indigo-900/30 p-4 rounded-xl">
+            <h4 class="font-bold text-purple-700 dark:text-purple-400 mb-2">3. Análisis</h4>
+            <p class="text-sm text-slate-600 dark:text-slate-400">
+                Se calculan estadísticas: días que supera al dólar, diferencia promedio, etc.
+            </p>
+        </div>
+    </div>
+    
+    <div class="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+        <h4 class="font-bold mb-3">Acceso rápido</h4>
+        <div class="flex flex-wrap gap-2">
+            <a href="/" class="px-4 py-2 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg font-bold text-sm transition-colors">
+                📊 Dashboard Principal
+            </a>
+            <a href="/consulta" class="px-4 py-2 bg-green-100 dark:bg-green-900/30 hover:bg-green-200 dark:hover:bg-green-800/50 text-green-700 dark:text-green-400 rounded-lg font-bold text-sm transition-colors">
+                📈 Consulta Histórica
+            </a>
+            <a href="/admin/ingreso-manual" class="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-800/50 text-blue-700 dark:text-blue-400 rounded-lg font-bold text-sm transition-colors">
+                📝 Datos Manuales
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    cargarEstado();
+});
+
+function cargarEstado() {
+    const estadoContainer = document.getElementById('estadoContainer');
+    estadoContainer.innerHTML = `
+        <div class="text-center py-4">
+            <div class="animate-spin text-xl mb-2">⏳</div>
+            <p class="text-slate-500">Consultando estado...</p>
+        </div>
+    `;
+    
+    fetch('/api/dolar-bcv/estado')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const info = data.data;
+                
+                let html = '';
+                
+                if (info.tabla_existe && info.total_registros > 0) {
+                    // Formatear fechas
+                    let fechaMin = info.fecha_min;
+                    let fechaMax = info.fecha_max;
+                    
+                    if (fechaMin && fechaMin.length === 8) {
+                        fechaMin = fechaMin.substring(6,8) + '/' + fechaMin.substring(4,6) + '/' + fechaMin.substring(0,4);
+                    }
+                    
+                    if (fechaMax && fechaMax.length === 8) {
+                        fechaMax = fechaMax.substring(6,8) + '/' + fechaMax.substring(4,6) + '/' + fechaMax.substring(0,4);
+                    }
+                    
+                    html = `
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-600 dark:text-slate-400">Total registros</span>
+                                <span class="font-bold text-lg text-green-600 dark:text-green-400">${info.total_registros}</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-600 dark:text-slate-400">Rango de fechas</span>
+                                <span class="font-bold text-slate-800 dark:text-slate-200">${fechaMin} - ${fechaMax}</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-600 dark:text-slate-400">Última tasa</span>
+                                <span class="font-bold text-lg text-blue-600 dark:text-blue-400">Bs. ${info.ultima_tasa.toFixed(4)}</span>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-600 dark:text-slate-400">Rango (días)</span>
+                                <span class="font-bold">${info.rango_dias}</span>
+                            </div>
+                            
+                            <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                <div class="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+                                    <p class="text-sm text-green-700 dark:text-green-400 font-bold">
+                                        ✅ Sistema listo para comparaciones
+                                    </p>
+                                    <p class="text-xs text-green-600 dark:text-green-500 mt-1">
+                                        Los datos aparecerán en consultas históricas automáticamente.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (info.tabla_existe) {
+                    html = `
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-600 dark:text-slate-400">Estado</span>
+                                <span class="font-bold text-yellow-600 dark:text-yellow-400">Tabla vacía</span>
+                            </div>
+                            
+                            <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded-lg">
+                                    <p class="text-sm text-yellow-700 dark:text-yellow-400 font-bold">
+                                        ⚠️ Cargar datos del dólar BCV
+                                    </p>
+                                    <p class="text-xs text-yellow-600 dark:text-yellow-500 mt-1">
+                                        Use el panel de carga para importar datos desde Excel.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html = `
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-slate-600 dark:text-slate-400">Estado</span>
+                                <span class="font-bold text-red-600 dark:text-red-400">Tabla no existe</span>
+                            </div>
+                            
+                            <div class="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                                <div class="bg-red-50 dark:bg-red-900/20 p-3 rounded-lg">
+                                    <p class="text-sm text-red-700 dark:text-red-400 font-bold">
+                                        ❌ Sistema no configurado
+                                    </p>
+                                    <p class="text-xs text-red-600 dark:text-red-500 mt-1">
+                                        La tabla dolar_bcv no existe. Cargue datos para crearla.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                estadoContainer.innerHTML = html;
+            } else {
+                estadoContainer.innerHTML = `
+                    <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                        <p class="text-red-700 dark:text-red-400 font-bold">❌ Error cargando estado</p>
+                        <p class="text-sm text-red-600 dark:text-red-500 mt-1">${data.message}</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            estadoContainer.innerHTML = `
+                <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                    <p class="text-red-700 dark:text-red-400 font-bold">❌ Error de conexión</p>
+                    <p class="text-sm text-red-600 dark:text-red-500 mt-1">${error}</p>
+                </div>
+            `;
+        });
+}
+
+function cargarDatosDolar() {
+    const btnCargar = document.getElementById('btnCargarDatos');
+    const resultadoContainer = document.getElementById('cargaResultado');
+    
+    const originalText = btnCargar.innerHTML;
+    btnCargar.innerHTML = '<span class="animate-spin">⏳</span> Cargando...';
+    btnCargar.disabled = true;
+    
+    resultadoContainer.classList.add('hidden');
+    
+    fetch('/admin/cargar-dolar-bcv', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            resultadoContainer.innerHTML = `
+                <div class="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
+                    <p class="text-green-700 dark:text-green-400 font-bold">✅ ${data.message}</p>
+                    <p class="text-sm text-green-600 dark:text-green-500 mt-1">
+                        Los datos se cargaron correctamente. Se actualizará automáticamente en las consultas.
+                    </p>
+                </div>
+            `;
+            
+            // Actualizar estado automáticamente después de 1 segundo
+            setTimeout(() => {
+                cargarEstado();
+            }, 1000);
+        } else {
+            resultadoContainer.innerHTML = `
+                <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                    <p class="text-red-700 dark:text-red-400 font-bold">❌ ${data.message}</p>
+                    <p class="text-sm text-red-600 dark:text-red-500 mt-1">
+                        Verifique que el archivo Excel exista y tenga el formato correcto.
+                    </p>
+                </div>
+            `;
+        }
+        
+        resultadoContainer.classList.remove('hidden');
+    })
+    .catch(error => {
+        resultadoContainer.innerHTML = `
+            <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg">
+                <p class="text-red-700 dark:text-red-400 font-bold">❌ Error de conexión</p>
+                <p class="text-sm text-red-600 dark:text-red-500 mt-1">${error}</p>
+            </div>
+        `;
+        resultadoContainer.classList.remove('hidden');
+    })
+    .finally(() => {
+        btnCargar.innerHTML = originalText;
+        btnCargar.disabled = false;
+    });
+}
+</script>
+{% endblock %}

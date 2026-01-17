@@ -1,0 +1,31 @@
+BOLSADC_2/
+├── 📁 database/
+│   ├── 📄 bolsa_datos.db          (NUEVO: Base de datos SQLite - PRINCIPAL)
+│   └── 📄 bolsa_datos.json        (Antiguo: TinyDB JSON - Backup)
+├── 📁 templates/
+│   ├── 📄 base.html
+│   ├── 📄 index.html
+│   ├── 📄 consulta.html
+│   ├── 📄 ingreso_manual.html
+│   ├── 📄 error.html
+│   └── 📄 exito.html
+├── 📁 static/
+│   └── 📁 img/logos/
+│       └── 📄 [logos de acciones].png
+├── 📁 data_cache/                  (Opcional: Archivos .dat históricos)
+│   ├── 📄 20240115.dat
+│   ├── 📄 20240116.dat
+│   └── 📄 ...
+├── 📄 app.py                       (APLICACIÓN PRINCIPAL - MODIFICADO)
+├── 📄 sqlite_manager.py           (NUEVO: Gestor de SQLite)
+├── 📄 extractor.py                (MODIFICADO: Ahora usa SQLite)
+├── 📄 datos_manuales.py           (MODIFICADO: Ahora usa SQLite)
+├── 📄 query_cache.py              (Caché de consultas - se mantiene)
+├── 📄 dat_parser.py               (MODIFICADO: Soporte SQLite)
+├── 📄 migrate_to_sqlite.py        (NUEVO: Script de migración)
+├── 📄 corregir_nombres.py         (MODIFICADO: Para SQLite)
+├── 📄 requirements.txt
+├── 📄 cleanup_db.py
+├── 📄 seed_db.py
+├── 📄 cargar_cache.py
+└── 📄 test_velocidad.py
