@@ -1,13 +1,13 @@
-<!-- templates/consulta.html - VERSIÓN RESPONSIVA -->
+<!-- templates/consulta.html - VERSIÓN CON GRÁFICO DE VOLUMEN -->
 {% extends "base.html" %}
 
-{% block title %}Análisis Histórico - {{ simbolo }}{% endblock %}
+{% block title %}Análisis Histórico - {{ simbolo }} vs $BCV{% endblock %}
 
 {% block content %}
 <div class="mb-6 md:mb-8">
-    <h2 class="text-2xl md:text-3xl font-black italic uppercase tracking-tighter">Análisis Histórico</h2>
+    <h2 class="text-2xl md:text-3xl font-black italic uppercase tracking-tighter">Análisis Histórico Comparado</h2>
     <p class="text-slate-500 dark:text-slate-400 font-bold uppercase text-xs tracking-widest">
-        📈 Consulta y análisis detallado por símbolo y período
+        📈 Consulta y comparativa {{ simbolo }} vs Dólar BCV
     </p>
 </div>
 
@@ -45,7 +45,7 @@
         
         <div class="md:col-span-4">
             <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-black py-3 rounded-xl transition-transform active:scale-95 uppercase text-sm shadow-lg mt-2">
-                📈 Consultar
+                📈 Consultar y Comparar
             </button>
         </div>
     </form>
@@ -74,7 +74,7 @@
     </div>
 </div>
 
-{% if datos_historicos %}
+{% if datos_historicos and datos_historicos|length > 0 %}
 <!-- Tarjeta principal con estadísticas -->
 <div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 mb-6 md:mb-8">
     <div class="flex flex-col gap-4 md:gap-8 mb-6 md:mb-8">
@@ -106,8 +106,8 @@
                 </div>
             </div>
             
-            <!-- Estadísticas principales -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <!-- ESTADÍSTICAS PRINCIPALES -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-6">
                 <div class="text-center">
                     <p class="text-[10px] font-bold text-slate-400 uppercase">Precio Inicial</p>
                     <p class="text-lg md:text-xl font-black text-slate-800 dark:text-white">Bs. {{ "{:,.2f}".format(precio_inicial) }}</p>
@@ -131,459 +131,982 @@
                         {{ "{:+.2f}".format(rendimiento_porcentaje) }}%
                     </p>
                 </div>
+                
+                <div class="text-center md:col-span-1">
+                    <p class="text-[10px] font-bold text-slate-400 uppercase">Tasa $BCV</p>
+                    <p class="text-lg md:text-xl font-black text-amber-600 dark:text-amber-400">
+                        {% if datos_con_dolar and datos_con_dolar|length > 0 and datos_con_dolar[-1].tasa_dolar and datos_con_dolar[-1].tasa_dolar > 0 %}
+                            {{ "{:,.2f}".format(datos_con_dolar[-1].tasa_dolar) }} Bs/$
+                        {% else %}
+                            -
+                        {% endif %}
+                    </p>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- GRÁFICO PRINCIPAL -->
-    <div class="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg mb-6 md:mb-10">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4 mb-4">
-            <h3 class="text-lg md:text-xl font-black text-slate-800 dark:text-white">
-                Evolución de {{ simbolo }}
-            </h3>
-            <div class="flex items-center gap-2">
-                <span class="text-xs text-slate-500 dark:text-slate-400 font-bold">
-                    {{ total_dias }} puntos
-                </span>
+    <!-- COMPARATIVA DE RENDIMIENTO -->
+    {% if datos_con_dolar and datos_con_dolar|length > 0 %}
+        {% set datos_dolar_ordenados = datos_con_dolar|sort(attribute='fecha') %}
+        {% set primera_tasa = (datos_dolar_ordenados[0].tasa_dolar if datos_dolar_ordenados[0].tasa_dolar > 0 else 1) %}
+        {% set ultima_tasa = (datos_dolar_ordenados[-1].tasa_dolar if datos_dolar_ordenados[-1].tasa_dolar > 0 else 1) %}
+        {% set rendimiento_dolar_periodo = ((ultima_tasa - primera_tasa) / primera_tasa * 100) if primera_tasa > 0 else 0 %}
+        {% set diferencia_real = rendimiento_porcentaje - rendimiento_dolar_periodo %}
+        
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 md:p-6 rounded-xl md:rounded-2xl border border-blue-200 dark:border-blue-800 mb-6 md:mb-8">
+        <h4 class="text-base md:text-lg font-black uppercase text-blue-700 dark:text-blue-400 mb-3 flex items-center gap-2">
+            <span class="text-xl">💰</span> Comparativa {{ simbolo }} vs Dólar BCV
+        </h4>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            <div class="text-center">
+                <p class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase">Rend. {{ simbolo }}</p>
+                <p class="text-xl md:text-2xl font-black {% if rendimiento_porcentaje > 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                    {{ "{:+.1f}".format(rendimiento_porcentaje) }}%
+                </p>
+            </div>
+            
+            <div class="text-center">
+                <p class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase">Rend. $BCV</p>
+                <p class="text-xl md:text-2xl font-black text-amber-600 dark:text-amber-400">
+                    {{ "{:+.1f}".format(rendimiento_dolar_periodo) }}%
+                </p>
+            </div>
+            
+            <div class="text-center">
+                <p class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase">Diferencia</p>
+                <p class="text-xl md:text-2xl font-black 
+                    {% if diferencia_real > 0 %}text-green-600 dark:text-green-400
+                    {% elif diferencia_real < 0 %}text-red-600 dark:text-red-400
+                    {% else %}text-slate-600 dark:text-slate-400{% endif %}">
+                    {{ "{:+.1f}".format(diferencia_real) }}%
+                </p>
+            </div>
+            
+            <div class="text-center">
+                <p class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase">Supera al $</p>
+                <p class="text-xl md:text-2xl font-black 
+                    {% if estadisticas_dolar.porcentaje_supera_dolar > 50 %}text-green-600 dark:text-green-400
+                    {% elif estadisticas_dolar.porcentaje_supera_dolar > 30 %}text-amber-600 dark:text-amber-400
+                    {% else %}text-red-600 dark:text-red-400{% endif %}">
+                    {{ "{:.0f}".format(estadisticas_dolar.porcentaje_supera_dolar) }}%
+                </p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    {{ estadisticas_dolar.dias_supera_dolar }}/{{ estadisticas_dolar.dias_con_dolar }} días
+                </p>
             </div>
         </div>
         
-        <div class="chart-container" style="height: 300px; min-height: 250px;">
-            <canvas id="graficoHistorico"></canvas>
-        </div>
-    </div>
-    
-    <!-- Estadísticas adicionales en tarjetas -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mt-6 md:mt-8">
-        <div class="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900/20 dark:to-gray-900/30 p-4 md:p-6 rounded-xl md:rounded-2xl border border-slate-200 dark:border-slate-700">
-            <h4 class="text-sm font-black uppercase text-slate-600 dark:text-slate-400 mb-3 md:mb-4 flex items-center gap-2">
-                <span>📊</span> Estadísticas
-            </h4>
-            <div class="space-y-3 md:space-y-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs md:text-sm text-slate-600 dark:text-slate-400">Precio Máximo</span>
-                    <span class="font-bold text-base md:text-lg text-green-600 dark:text-green-400">
-                        Bs. {{ "{:,.2f}".format(precio_maximo) }}
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs md:text-sm text-slate-600 dark:text-slate-400">Precio Mínimo</span>
-                    <span class="font-bold text-base md:text-lg text-red-600 dark:text-red-400">
-                        Bs. {{ "{:,.2f}".format(precio_minimo) }}
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs md:text-sm text-slate-600 dark:text-slate-400">Precio Promedio</span>
-                    <span class="font-bold text-base md:text-lg text-blue-600 dark:text-blue-400">
-                        Bs. {{ "{:,.2f}".format(precio_promedio) }}
-                    </span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/30 p-4 md:p-6 rounded-xl md:rounded-2xl border border-green-200 dark:border-green-800/30">
-            <h4 class="text-sm font-black uppercase text-green-600 dark:text-green-400 mb-3 md:mb-4 flex items-center gap-2">
-                <span>📈</span> Tendencias
-            </h4>
-            <div class="space-y-3 md:space-y-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs md:text-sm text-green-700 dark:text-green-400">Días en Alza</span>
-                    <span class="font-bold text-base md:text-lg text-green-700 dark:text-green-400">
-                        {{ dias_alza }}
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs md:text-sm text-red-700 dark:text-red-400">Días en Baja</span>
-                    <span class="font-bold text-base md:text-lg text-red-700 dark:text-red-400">
-                        {{ dias_baja }}
-                    </span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs md:text-sm text-blue-700 dark:text-blue-400">Días Estables</span>
-                    <span class="font-bold text-base md:text-lg text-blue-700 dark:text-blue-400">
-                        {{ dias_estables }}
-                    </span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/30 p-4 md:p-6 rounded-xl md:rounded-2xl border border-blue-200 dark:border-blue-800/30">
-            <h4 class="text-sm font-black uppercase text-blue-600 dark:text-blue-400 mb-3 md:mb-4 flex items-center gap-2">
-                <span>📋</span> Información
-            </h4>
-            <div class="space-y-3 md:space-y-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-xs md:text-sm text-blue-700 dark:text-blue-400">Período Total</span>
-                    <span class="font-bold text-base md:text-lg">{{ total_dias }} días</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs md:text-sm text-blue-700 dark:text-blue-400">Primer Dato</span>
-                    <span class="font-bold text-xs text-slate-800 dark:text-slate-200">{{ primera_fecha }}</span>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-xs md:text-sm text-blue-700 dark:text-blue-400">Último Dato</span>
-                    <span class="font-bold text-xs text-slate-800 dark:text-slate-200">{{ ultima_fecha }}</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Tabla de datos históricos - VERSIÓN MÓVIL -->
-<div class="bg-white dark:bg-slate-800 p-4 md:p-8 rounded-2xl md:rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700">
-    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4 mb-4 md:mb-6">
-        <h3 class="text-lg md:text-xl font-black flex items-center gap-2">
-            <span class="text-xl md:text-2xl">📋</span> Datos Históricos Detallados
-        </h3>
-        <span class="text-xs font-bold text-slate-500 dark:text-slate-400">
-            Página {{ pagina }} de {{ total_paginas }}
-        </span>
-    </div>
-    
-    <div class="overflow-x-auto -mx-2 md:mx-0">
-        <div class="min-w-full inline-block align-middle">
-            <!-- Vista móvil para tabla de datos -->
-            <div class="md:hidden space-y-3">
-                {% for dato in datos_historicos %}
-                <div class="p-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold text-slate-700 dark:text-slate-300">{{ dato.fecha_formateada }}</span>
-                        <span class="text-sm font-bold {% if dato.variacion > 0 %}text-green-600 dark:text-green-400{% elif dato.variacion < 0 %}text-red-600 dark:text-red-400{% else %}text-slate-500 dark:text-slate-400{% endif %}">
-                            {% if dato.variacion > 0 %}+{% endif %}{{ "{:.2f}".format(dato.variacion) }}%
-                        </span>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Precio</p>
-                            <p class="font-bold text-slate-800 dark:text-white">
-                                Bs. {{ "{:,.2f}".format(dato.precio) }}
-                            </p>
-                        </div>
-                        <div>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Cantidad</p>
-                            <p class="font-bold text-slate-800 dark:text-white">
-                                {{ "{:,}".format(dato.cantidad) }}
-                            </p>
-                        </div>
-                        <div class="col-span-2">
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Monto Total</p>
-                            <p class="font-bold text-slate-800 dark:text-white">
-                                Bs. {{ "{:,.2f}".format(dato.monto) }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            
-            <!-- Vista desktop (tabla completa) -->
-            <table class="hidden md:table w-full text-left border-collapse">
-                <thead>
-                    <tr class="bg-slate-50 dark:bg-slate-800 text-[10px] font-black uppercase tracking-widest">
-                        <th class="p-4 text-blue-600 dark:text-blue-400">Fecha</th>
-                        <th class="p-4 text-right text-blue-600 dark:text-blue-400">Precio (Bs)</th>
-                        <th class="p-4 text-right text-blue-600 dark:text-blue-400">Variación %</th>
-                        <th class="p-4 text-right text-blue-600 dark:text-blue-400">Cantidad</th>
-                        <th class="p-4 text-right text-blue-600 dark:text-blue-400">Monto (Bs)</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
-                    {% for dato in datos_historicos %}
-                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-                        <td class="p-4 font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white">
-                            {{ dato.fecha_formateada }}
-                        </td>
-                        <td class="p-4 text-right font-mono font-bold text-lg 
-                            {% if dato.variacion > 0 %}
-                                text-green-700 dark:text-green-400
-                            {% elif dato.variacion < 0 %}
-                                text-red-700 dark:text-red-400
-                            {% else %}
-                                text-slate-700 dark:text-slate-300
-                            {% endif %}">
-                            Bs. {{ "{:,.2f}".format(dato.precio) }}
-                        </td>
-                        <td class="p-4 text-right">
-                            {% if dato.variacion > 0 %}
-                            <span class="px-3 py-1.5 rounded-full font-black text-xs bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                +{{ "{:.2f}".format(dato.variacion) }}%
-                            </span>
-                            {% elif dato.variacion < 0 %}
-                            <span class="px-3 py-1.5 rounded-full font-black text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                                {{ "{:.2f}".format(dato.variacion) }}%
-                            </span>
-                            {% else %}
-                            <span class="px-3 py-1.5 rounded-full font-black text-xs bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                                {{ "{:.2f}".format(dato.variacion) }}%
-                            </span>
-                            {% endif %}
-                        </td>
-                        <td class="p-4 text-right font-bold text-slate-700 dark:text-slate-300">
-                            {{ "{:,}".format(dato.cantidad) }}
-                        </td>
-                        <td class="p-4 text-right font-bold text-slate-700 dark:text-slate-300">
-                            Bs. {{ "{:,.2f}".format(dato.monto) }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    
-    <!-- Paginación -->
-    {% if total_paginas > 1 %}
-    <div class="mt-6 md:mt-8 flex justify-center">
-        <div class="flex items-center gap-2">
-            {% if pagina > 1 %}
-            <a href="/consulta?simbolo={{ simbolo }}&fecha_desde={{ fecha_desde }}&fecha_hasta={{ fecha_hasta }}&pagina={{ pagina-1 }}"
-               class="px-3 md:px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-sm">
-                ← Anterior
-            </a>
-            {% endif %}
-            
-            <span class="px-3 md:px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg font-bold text-sm">
-                Página {{ pagina }} de {{ total_paginas }}
-            </span>
-            
-            {% if pagina < total_paginas %}
-            <a href="/consulta?simbolo={{ simbolo }}&fecha_desde={{ fecha_desde }}&fecha_hasta={{ fecha_hasta }}&pagina={{ pagina+1 }}"
-               class="px-3 md:px-4 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-sm">
-                Siguiente →
-            </a>
-            {% endif %}
+        <!-- Interpretación del resultado -->
+        <div class="mt-4 p-3 bg-white dark:bg-slate-800/50 rounded-lg border border-blue-100 dark:border-blue-800/30">
+            <p class="text-sm text-slate-700 dark:text-slate-300">
+                <span class="font-bold text-blue-600 dark:text-blue-400">Interpretación:</span>
+                {% if diferencia_real > 50 %}
+                <span class="text-green-600 dark:text-green-400 font-bold">{{ simbolo }} supera significativamente al dólar BCV (+{{ "{:.1f}".format(diferencia_real) }}%).</span>
+                {% elif diferencia_real > 10 %}
+                <span class="text-green-600 dark:text-green-400 font-bold">{{ simbolo }} tiene mejor rendimiento que el dólar BCV.</span>
+                {% elif diferencia_real > 0 %}
+                <span class="text-green-600 dark:text-green-400 font-bold">{{ simbolo }} supera ligeramente al dólar BCV.</span>
+                {% elif diferencia_real > -10 %}
+                <span class="text-amber-600 dark:text-amber-400 font-bold">Rendimiento similar al dólar BCV.</span>
+                {% elif diferencia_real > -30 %}
+                <span class="text-red-600 dark:text-red-400 font-bold">{{ simbolo }} tiene rendimiento inferior al dólar BCV.</span>
+                {% else %}
+                <span class="text-red-600 dark:text-red-400 font-bold">{{ simbolo }} tiene rendimiento significativamente inferior al dólar BCV.</span>
+                {% endif %}
+            </p>
         </div>
     </div>
     {% endif %}
 </div>
 
-<!-- Script actualizado para responsividad del gráfico -->
+<!-- GRÁFICO COMPARATIVO SIMPLIFICADO -->
+<div class="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg mb-6">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4 mb-4">
+        <div>
+            <h3 class="text-lg md:text-xl font-black text-slate-800 dark:text-white">
+                Comparativa: {{ simbolo }} vs Dólar BCV
+            </h3>
+            <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">
+                📈 Evolución comparada de la acción y la tasa oficial del dólar
+            </p>
+        </div>
+    </div>
+    
+    <div class="chart-container" style="height: 350px; min-height: 300px;">
+        <canvas id="graficoComparativo"></canvas>
+    </div>
+    
+    {% if not labels or labels|length == 0 %}
+    <div class="text-center py-12">
+        <div class="text-4xl mb-2">📊</div>
+        <h4 class="text-lg font-black mb-2">No hay datos disponibles</h4>
+        <p class="text-slate-500 dark:text-slate-400">Selecciona otro rango de fechas para visualizar la comparativa.</p>
+    </div>
+    {% endif %}
+    
+    <!-- Controles del gráfico -->
+    <div class="mt-4 flex flex-wrap gap-3 justify-center">
+        <button onclick="toggleDataset(0)" class="px-3 py-1.5 text-xs font-bold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-lg transition-all hover:opacity-80">
+            <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+            {{ simbolo }}
+        </button>
+        <button onclick="toggleDataset(1)" class="px-3 py-1.5 text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 rounded-lg transition-all hover:opacity-80">
+            <span class="inline-block w-2 h-2 bg-amber-500 rounded-full mr-1"></span>
+            Dólar BCV
+        </button>
+    </div>
+</div>
+
+<!-- NUEVO: GRÁFICO DE VOLUMEN -->
+<div class="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg mb-6 md:mb-10">
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 md:gap-4 mb-4">
+        <div>
+            <h3 class="text-lg md:text-xl font-black text-slate-800 dark:text-white">
+                Volumen y Operaciones: {{ simbolo }}
+            </h3>
+            <p class="text-xs md:text-sm text-slate-500 dark:text-slate-400">
+                📊 Monto negociado y cantidad de operaciones por día
+            </p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+            <button onclick="toggleVolumeChartType('bar')" class="px-3 py-1.5 text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 rounded-lg transition-all hover:opacity-80">
+                📊 Barras
+            </button>
+            <button onclick="toggleVolumeChartType('line')" class="px-3 py-1.5 text-xs font-bold bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400 rounded-lg transition-all hover:opacity-80">
+                📈 Líneas
+            </button>
+        </div>
+    </div>
+    
+    <div class="chart-container" style="height: 300px; min-height: 250px;">
+        <canvas id="graficoVolumen"></canvas>
+    </div>
+    
+    {% if not labels or labels|length == 0 %}
+    <div class="text-center py-8">
+        <div class="text-3xl mb-2">📦</div>
+        <h4 class="text-lg font-black mb-2">No hay datos de volumen</h4>
+        <p class="text-slate-500 dark:text-slate-400">No se encontraron datos de monto negociado para este período.</p>
+    </div>
+    {% endif %}
+    
+    <!-- Estadísticas de volumen -->
+    <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
+        <h4 class="font-bold text-base mb-3 flex items-center gap-2">
+            <span class="text-blue-500">📊</span>
+            Estadísticas de Volumen
+        </h4>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="bg-slate-50 dark:bg-slate-900 p-3 rounded-lg">
+                <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Volumen Total</p>
+                <p class="text-lg md:text-xl font-black text-blue-600 dark:text-blue-400">
+                    Bs <span id="volumenTotal">0</span>
+                </p>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900 p-3 rounded-lg">
+                <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Día Mayor Volumen</p>
+                <p class="text-lg md:text-xl font-black text-green-600 dark:text-green-400">
+                    Bs <span id="mayorVolumenDia">0</span>
+                </p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1" id="fechaMayorVolumen">-</p>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900 p-3 rounded-lg">
+                <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Volumen Promedio</p>
+                <p class="text-lg md:text-xl font-black">
+                    Bs <span id="volumenPromedio">0</span>
+                </p>
+            </div>
+            <div class="bg-slate-50 dark:bg-slate-900 p-3 rounded-lg">
+                <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Operaciones Totales</p>
+                <p class="text-lg md:text-xl font-black text-purple-600 dark:text-purple-400">
+                    <span id="operacionesTotales">0</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ESTADÍSTICAS DETALLADAS -->
+<div class="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl p-4 md:p-6 shadow-lg mb-6 md:mb-10">
+    <h3 class="text-lg md:text-xl font-black text-slate-800 dark:text-white mb-3 md:mb-4">Estadísticas Detalladas</h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <!-- Estadísticas de la Acción -->
+        <div class="space-y-3 md:space-y-4">
+            <h4 class="font-bold text-base md:text-lg flex items-center gap-2">
+                <span class="text-green-500">📈</span>
+                Estadísticas de {{ simbolo }}
+            </h4>
+            
+            <div class="grid grid-cols-2 gap-3 md:gap-4">
+                <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Precio Máximo</p>
+                    <p class="text-lg md:text-xl font-black text-green-600 dark:text-green-400">
+                        Bs {{ "{:,.2f}".format(precio_maximo) }}
+                    </p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Precio Mínimo</p>
+                    <p class="text-lg md:text-xl font-black text-red-600 dark:text-red-400">
+                        Bs {{ "{:,.2f}".format(precio_minimo) }}
+                    </p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Precio Promedio</p>
+                    <p class="text-lg md:text-xl font-black">
+                        Bs {{ "{:,.2f}".format(precio_promedio) }}
+                    </p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Volatilidad</p>
+                    <p class="text-lg md:text-xl font-black">
+                        {{ "{:,.2f}".format(volatilidad) }}%
+                    </p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Días en Alza</p>
+                    <p class="text-lg md:text-xl font-black text-green-600 dark:text-green-400">
+                        {{ dias_alza }} días
+                    </p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        {{ (dias_alza / total_dias * 100)|round|int if total_dias > 0 else 0 }}% del período
+                    </p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Días en Baja</p>
+                    <p class="text-lg md:text-xl font-black text-red-600 dark:text-red-400">
+                        {{ dias_baja }} días
+                    </p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        {{ (dias_baja / total_dias * 100)|round|int if total_dias > 0 else 0 }}% del período
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Estadísticas del Dólar -->
+        <div class="space-y-3 md:space-y-4">
+            <h4 class="font-bold text-base md:text-lg flex items-center gap-2">
+                <span class="text-amber-500">💵</span>
+                Estadísticas del Dólar BCV
+            </h4>
+            
+            {% if datos_con_dolar and datos_con_dolar|length > 0 %}
+            <div class="grid grid-cols-2 gap-3 md:gap-4">
+                <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Tasa Actual</p>
+                    <p class="text-lg md:text-xl font-black">
+                        {% if datos_con_dolar[-1].tasa_dolar > 0 %}
+                            {{ "{:,.2f}".format(datos_con_dolar[-1].tasa_dolar) }} Bs/$
+                        {% else %}
+                            -
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Días con Datos</p>
+                    <p class="text-lg md:text-xl font-black">
+                        {{ estadisticas_dolar.dias_con_dolar }} días
+                    </p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Supera al $</p>
+                    <p class="text-lg md:text-xl font-black {% if estadisticas_dolar.porcentaje_supera_dolar > 50 %}text-green-600 dark:text-green-400{% elif estadisticas_dolar.porcentaje_supera_dolar > 30 %}text-amber-600 dark:text-amber-400{% else %}text-red-600 dark:text-red-400{% endif %}">
+                        {{ "{:.0f}".format(estadisticas_dolar.porcentaje_supera_dolar) }}%
+                    </p>
+                </div>
+                <div class="bg-slate-50 dark:bg-slate-900 p-3 md:p-4 rounded-lg md:rounded-xl">
+                    <p class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase">Diferencia Prom.</p>
+                    <p class="text-lg md:text-xl font-black {% if estadisticas_dolar.diferencia_promedio_vs_dolar > 0 %}text-green-600 dark:text-green-400{% elif estadisticas_dolar.diferencia_promedio_vs_dolar < 0 %}text-red-600 dark:text-red-400{% endif %}">
+                        {{ "{:+.2f}".format(estadisticas_dolar.diferencia_promedio_vs_dolar) }}%
+                    </p>
+                </div>
+            </div>
+            {% else %}
+            <div class="bg-slate-50 dark:bg-slate-900 p-4 rounded-xl">
+                <p class="text-slate-500 dark:text-slate-400 text-sm">No hay datos del dólar BCV para este período</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de datos históricos -->
+{% if datos_historicos %}
+<div class="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700">
+    <div class="p-4 md:p-6">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-2">
+            <h3 class="text-lg md:text-xl font-black text-slate-800 dark:text-white">Datos Históricos</h3>
+            <div class="text-xs text-slate-500 dark:text-slate-400">
+                Página {{ pagina }} de {{ total_paginas }}
+            </div>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm md:text-base">
+                <thead class="bg-slate-50 dark:bg-slate-900">
+                    <tr>
+                        <th class="p-3 text-left font-black text-slate-700 dark:text-slate-300">Fecha</th>
+                        <th class="p-3 text-left font-black text-slate-700 dark:text-slate-300">Precio (Bs)</th>
+                        <th class="p-3 text-left font-black text-slate-700 dark:text-slate-300">Variación</th>
+                        <th class="p-3 text-left font-black text-slate-700 dark:text-slate-300">Monto (Bs)</th>
+                        <th class="p-3 text-left font-black text-slate-700 dark:text-slate-300">Operaciones</th>
+                        {% if datos_con_dolar and datos_con_dolar|length > 0 %}
+                        <th class="p-3 text-left font-black text-slate-700 dark:text-slate-300">Tasa $BCV</th>
+                        <th class="p-3 text-left font-black text-slate-700 dark:text-slate-300">Diferencia vs $</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    {% for dato in datos_historicos %}
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
+                        <td class="p-3 font-bold">{{ dato.fecha_formateada }}</td>
+                        <td class="p-3 font-black">Bs {{ "{:,.2f}".format(dato.precio) }}</td>
+                        <td class="p-3 font-bold {% if dato.variacion > 0 %}text-green-600 dark:text-green-400{% elif dato.variacion < 0 %}text-red-600 dark:text-red-400{% endif %}">
+                            {{ "{:+.2f}".format(dato.variacion) }}%
+                        </td>
+                        <td class="p-3 font-bold text-blue-600 dark:text-blue-400">
+                            Bs {{ "{:,.2f}".format(dato.monto if dato.monto else 0) }}
+                        </td>
+                        <td class="p-3 font-bold text-purple-600 dark:text-purple-400">
+                            {{ dato.cantidad if dato.cantidad else 0 }}
+                        </td>
+                        {% if datos_con_dolar and datos_con_dolar|length > 0 %}
+                        <td class="p-3 font-bold text-amber-600 dark:text-amber-400">
+                            {% set tasa_dolar = datos_con_dolar[loop.index0].tasa_dolar if loop.index0 < datos_con_dolar|length else 0 %}
+                            {% if tasa_dolar > 0 %}
+                                {{ "{:,.2f}".format(tasa_dolar) }} Bs/$
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="p-3 font-bold {% if datos_con_dolar[loop.index0].diferencia_vs_dolar > 0 %}text-green-600 dark:text-green-400{% elif datos_con_dolar[loop.index0].diferencia_vs_dolar < 0 %}text-red-600 dark:text-red-400{% endif %}">
+                            {% if loop.index0 < datos_con_dolar|length %}
+                                {{ "{:+.2f}".format(datos_con_dolar[loop.index0].diferencia_vs_dolar) }}%
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Paginación -->
+        {% if total_paginas > 1 %}
+        <div class="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
+            <div class="flex justify-center gap-1 md:gap-2">
+                {% if pagina > 1 %}
+                <a href="/consulta?simbolo={{ simbolo }}&fecha_desde={{ fecha_desde }}&fecha_hasta={{ fecha_hasta }}&pagina={{ pagina - 1 }}"
+                   class="px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                    ← Anterior
+                </a>
+                {% endif %}
+                
+                {% for p in range(1, total_paginas + 1) %}
+                    {% if p == pagina %}
+                    <span class="px-3 py-2 bg-green-600 text-white rounded-lg text-xs font-bold">
+                        {{ p }}
+                    </span>
+                    {% elif p >= pagina - 2 and p <= pagina + 2 %}
+                    <a href="/consulta?simbolo={{ simbolo }}&fecha_desde={{ fecha_desde }}&fecha_hasta={{ fecha_hasta }}&pagina={{ p }}"
+                       class="px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                        {{ p }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if pagina < total_paginas %}
+                <a href="/consulta?simbolo={{ simbolo }}&fecha_desde={{ fecha_desde }}&fecha_hasta={{ fecha_hasta }}&pagina={{ pagina + 1 }}"
+                   class="px-3 py-2 bg-slate-100 dark:bg-slate-700 rounded-lg text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors">
+                    Siguiente →
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Script simplificado para el gráfico comparativo -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Datos para el gráfico
+    console.log('DOM cargado, inicializando gráficos...');
+    
     const labels = {{ labels|tojson|safe if labels else '[]' }};
     const precios = {{ valores|tojson|safe if valores else '[]' }};
+    const datosConDolar = {{ datos_con_dolar|tojson|safe if datos_con_dolar else '[]' }};
+    const datosHistoricos = {{ datos_historicos|tojson|safe if datos_historicos else '[]' }};
     
-    if (!labels || labels.length === 0 || !precios || precios.length === 0) {
-        const chartContainer = document.querySelector('.chart-container');
-        if (chartContainer) {
-            chartContainer.innerHTML = `
-                <div class="text-center py-12">
-                    <div class="text-4xl mb-2">📊</div>
-                    <h4 class="text-lg font-black mb-2">No hay datos disponibles</h4>
-                    <p class="text-slate-500 dark:text-slate-400">Selecciona otro rango de fechas.</p>
-                </div>
-            `;
+    console.log('Datos recibidos:', {
+        labels: labels?.length || 0,
+        precios: precios?.length || 0,
+        datosConDolar: datosConDolar?.length || 0,
+        datosHistoricos: datosHistoricos?.length || 0
+    });
+    
+    // ========== GRÁFICO COMPARATIVO ==========
+    const canvasComparativo = document.getElementById('graficoComparativo');
+    if (canvasComparativo && labels && labels.length > 0 && precios && precios.length > 0) {
+        const ctxComparativo = canvasComparativo.getContext('2d');
+        
+        // Obtener tasas del dólar
+        let tasasDolar = [];
+        if (datosConDolar && datosConDolar.length > 0) {
+            const datosOrdenados = datosConDolar.sort((a, b) => {
+                const dateA = new Date(a.fecha.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+                const dateB = new Date(b.fecha.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+                return dateA - dateB;
+            });
+            
+            tasasDolar = datosOrdenados.map(d => d.tasa_dolar || 0);
         }
-        return;
-    }
-    
-    const ctx = document.getElementById('graficoHistorico').getContext('2d');
-    
-    // Determinar color de línea
-    const rendimiento = {{ rendimiento_porcentaje|tojson|safe }};
-    let colorLinea = 'rgb(59, 130, 246)';
-    
-    if (rendimiento > 0) {
-        colorLinea = 'rgb(34, 197, 94)';
-    } else if (rendimiento < 0) {
-        colorLinea = 'rgb(239, 68, 68)';
-    }
-    
-    // Crear degradado
-    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, colorLinea.replace('rgb', 'rgba').replace(')', ', 0.2)'));
-    gradient.addColorStop(1, colorLinea.replace('rgb', 'rgba').replace(')', ', 0)'));
-    
-    // Configurar gráfico responsivo
-    const chart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Precio de Cierre (Bs)',
+        
+        const colorAccion = 'rgb(34, 197, 94)';
+        const colorDolar = 'rgb(245, 158, 11)';
+        
+        const isMobile = window.innerWidth < 768;
+        const pointRadius = isMobile ? 1 : 2;
+        const borderWidth = isMobile ? 2 : 3;
+        const fontSize = isMobile ? 9 : 11;
+        
+        const datasets = [
+            {
+                label: `{{ simbolo }} (Bs)`,
                 data: precios,
-                borderColor: colorLinea,
-                backgroundColor: gradient,
-                borderWidth: window.innerWidth < 768 ? 2 : 3,
-                pointRadius: window.innerWidth < 768 ? 2 : 4,
-                pointHoverRadius: window.innerWidth < 768 ? 6 : 8,
-                pointBackgroundColor: colorLinea,
+                borderColor: colorAccion,
+                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                borderWidth: borderWidth,
+                pointRadius: pointRadius,
+                pointHoverRadius: pointRadius + 2,
+                pointBackgroundColor: colorAccion,
                 pointBorderColor: '#ffffff',
-                pointBorderWidth: window.innerWidth < 768 ? 1 : 2,
+                pointBorderWidth: 1,
                 fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: window.innerWidth >= 768,
-                    position: 'top',
-                    labels: {
-                        font: {
-                            size: window.innerWidth < 768 ? 11 : 12
-                        },
-                        padding: 15,
-                        usePointStyle: true,
+                tension: 0.4,
+                yAxisID: 'y'
+            }
+        ];
+        
+        // CORRECCIÓN: Solo añadir dólar si hay datos - NO requiere misma longitud
+        if (tasasDolar.length > 0) {
+            console.log(`Añadiendo dólar al gráfico: ${tasasDolar.length} puntos`);
+            
+            // Alinear tasas con los puntos del gráfico si es necesario
+            let tasasAlineadas = tasasDolar;
+            
+            // Si hay diferencia de longitud, crear array alineado
+            if (tasasDolar.length !== precios.length) {
+                console.log(`Longitudes diferentes: dólar=${tasasDolar.length}, acción=${precios.length}`);
+                
+                // Crear array alineado con las fechas del gráfico
+                tasasAlineadas = new Array(precios.length).fill(0);
+                
+                if (datosConDolar && datosConDolar.length > 0) {
+                    // Mapa de tasas por fecha
+                    const tasasPorFecha = {};
+                    datosConDolar.forEach(d => {
+                        if (d.fecha && d.tasa_dolar) {
+                            tasasPorFecha[d.fecha] = d.tasa_dolar;
+                        }
+                    });
+                    
+                    // Intentar alinear con las fechas del gráfico
+                    for (let i = 0; i < precios.length; i++) {
+                        if (i < tasasDolar.length) {
+                            tasasAlineadas[i] = tasasDolar[i];
+                        } else if (tasasDolar.length > 0) {
+                            // Usar la última tasa disponible
+                            tasasAlineadas[i] = tasasDolar[tasasDolar.length - 1];
+                        }
+                    }
+                }
+            }
+            
+            datasets.push({
+                label: 'Dólar BCV (Bs/$)',
+                data: tasasAlineadas,
+                borderColor: colorDolar,
+                backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                borderWidth: borderWidth,
+                pointRadius: pointRadius,
+                pointHoverRadius: pointRadius + 2,
+                pointBackgroundColor: colorDolar,
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 1,
+                fill: false,
+                tension: 0.4,
+                yAxisID: 'y1'
+            });
+        }
+        
+        // Configurar ejes Y
+        const yAxisConfig = {
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                title: {
+                    display: !isMobile,
+                    text: '{{ simbolo }} (Bs)',
+                    color: colorAccion,
+                    font: {
+                        size: fontSize,
+                        weight: 'bold'
                     }
                 },
-                tooltip: {
+                grid: {
+                    display: true,
+                    color: 'rgba(0, 0, 0, 0.05)'
+                },
+                ticks: {
+                    callback: function(value) {
+                        if (value >= 1000000) {
+                            return `Bs ${(value/1000000).toFixed(1)}M`;
+                        } else if (value >= 1000) {
+                            return `Bs ${(value/1000).toFixed(0)}k`;
+                        }
+                        return `Bs ${value.toLocaleString('es-VE', {maximumFractionDigits: 0})}`;
+                    },
+                    font: {
+                        size: fontSize - 1
+                    }
+                }
+            }
+        };
+        
+        // Añadir eje Y para dólar si hay datos
+        if (tasasDolar.length > 0) {
+            yAxisConfig.y1 = {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                title: {
+                    display: !isMobile,
+                    text: 'Dólar BCV (Bs/$)',
+                    color: colorDolar,
+                    font: {
+                        size: fontSize,
+                        weight: 'bold'
+                    }
+                },
+                grid: {
+                    drawOnChartArea: false,
+                },
+                ticks: {
+                    callback: function(value) {
+                        return `Bs ${value.toLocaleString('es-VE', {maximumFractionDigits: 0})}`;
+                    },
+                    font: {
+                        size: fontSize - 1
+                    },
+                    color: colorDolar
+                }
+            };
+        }
+        
+        // Crear gráfico comparativo
+        window.chartComparativo = new Chart(ctxComparativo, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
                     mode: 'index',
                     intersect: false,
-                    backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                    titleFont: {
-                        size: window.innerWidth < 768 ? 11 : 12
+                },
+                plugins: {
+                    legend: {
+                        display: !isMobile,
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: fontSize
+                            },
+                            padding: 10,
+                            usePointStyle: true,
+                        }
                     },
-                    bodyFont: {
-                        size: window.innerWidth < 768 ? 11 : 12
-                    },
-                    padding: 10,
-                    cornerRadius: 6,
-                    borderColor: '#475569',
-                    borderWidth: 1
-                }
-            },
-            scales: {
-                x: {
-                    grid: {
-                        display: true,
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    },
-                    ticks: {
-                        maxRotation: window.innerWidth < 768 ? 90 : 45,
-                        minRotation: window.innerWidth < 768 ? 90 : 45,
-                        font: {
-                            size: window.innerWidth < 768 ? 9 : 11
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleFont: {
+                            size: fontSize
                         },
-                        color: '#64748b'
+                        bodyFont: {
+                            size: fontSize
+                        },
+                        padding: 8,
+                        cornerRadius: 6,
+                        borderColor: '#475569',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.datasetIndex === 0) {
+                                    label += 'Bs ' + context.parsed.y.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                } else {
+                                    label += 'Bs ' + context.parsed.y.toFixed(2) + '/$';
+                                }
+                                return label;
+                            }
+                        }
                     }
                 },
-                y: {
-                    beginAtZero: false,
-                    grid: {
-                        display: true,
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    },
-                    ticks: {
-                        callback: function(value) {
-                            if (value >= 1000) {
-                                return `Bs ${(value/1000).toFixed(0)}k`;
+                scales: {
+                    x: {
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            maxRotation: isMobile ? 90 : 45,
+                            minRotation: isMobile ? 90 : 45,
+                            font: {
+                                size: fontSize - 1
                             }
-                            return `Bs ${value.toLocaleString('es-VE', {maximumFractionDigits: 0})}`;
+                        }
+                    },
+                    ...yAxisConfig
+                }
+            }
+        });
+        
+        console.log('Gráfico comparativo creado exitosamente');
+    }
+    
+    // ========== GRÁFICO DE VOLUMEN ==========
+    const canvasVolumen = document.getElementById('graficoVolumen');
+    if (canvasVolumen && datosHistoricos && datosHistoricos.length > 0) {
+        const ctxVolumen = canvasVolumen.getContext('2d');
+        
+        // Extraer datos de volumen y operaciones
+        const volumenes = [];
+        const operaciones = [];
+        const fechasVolumen = [];
+        
+        // Ordenar datos por fecha
+        const datosOrdenados = [...datosHistoricos].sort((a, b) => {
+            const dateA = new Date(a.fecha.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+            const dateB = new Date(b.fecha.replace(/(\d{4})(\d{2})(\d{2})/, '$1-$2-$3'));
+            return dateA - dateB;
+        });
+        
+        datosOrdenados.forEach(dato => {
+            fechasVolumen.push(dato.fecha_formateada);
+            volumenes.push(dato.monto || 0);
+            operaciones.push(dato.cantidad || 0);
+        });
+        
+        // Calcular estadísticas de volumen
+        let volumenTotal = 0;
+        let mayorVolumen = 0;
+        let fechaMayorVolumen = '';
+        let operacionesTotales = 0;
+        
+        datosOrdenados.forEach((dato, index) => {
+            const monto = dato.monto || 0;
+            const cantidad = dato.cantidad || 0;
+            
+            volumenTotal += monto;
+            operacionesTotales += cantidad;
+            
+            if (monto > mayorVolumen) {
+                mayorVolumen = monto;
+                fechaMayorVolumen = dato.fecha_formateada;
+            }
+        });
+        
+        const volumenPromedio = volumenTotal / datosOrdenados.length;
+        
+        // Actualizar estadísticas en la UI
+        document.getElementById('volumenTotal').textContent = volumenTotal.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('mayorVolumenDia').textContent = mayorVolumen.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('fechaMayorVolumen').textContent = fechaMayorVolumen;
+        document.getElementById('volumenPromedio').textContent = volumenPromedio.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        document.getElementById('operacionesTotales').textContent = operacionesTotales.toLocaleString('es-VE');
+        
+        const colorVolumen = 'rgb(59, 130, 246)'; // Azul
+        const colorOperaciones = 'rgb(168, 85, 247)'; // Púrpura
+        
+        // Crear gráfico de volumen
+        window.chartVolumen = new Chart(ctxVolumen, {
+            type: 'bar', // Tipo por defecto: barras
+            data: {
+                labels: fechasVolumen,
+                datasets: [
+                    {
+                        label: 'Monto Negociado (Bs)',
+                        data: volumenes,
+                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                        borderColor: colorVolumen,
+                        borderWidth: 1,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Operaciones',
+                        data: operaciones,
+                        type: 'line', // Línea para operaciones
+                        backgroundColor: 'rgba(168, 85, 247, 0.1)',
+                        borderColor: colorOperaciones,
+                        borderWidth: 2,
+                        pointRadius: 2,
+                        pointHoverRadius: 4,
+                        pointBackgroundColor: colorOperaciones,
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 1,
+                        fill: false,
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 11
+                            },
+                            padding: 10,
+                            usePointStyle: true,
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+                        titleFont: {
+                            size: 11
                         },
-                        font: {
-                            size: window.innerWidth < 768 ? 9 : 11
+                        bodyFont: {
+                            size: 11
                         },
-                        color: '#64748b'
+                        padding: 8,
+                        cornerRadius: 6,
+                        borderColor: '#475569',
+                        borderWidth: 1,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.datasetIndex === 0) {
+                                    label += 'Bs ' + context.parsed.y.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                } else {
+                                    label += context.parsed.y.toLocaleString('es-VE') + ' ops';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45,
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Monto (Bs)',
+                            color: colorVolumen,
+                            font: {
+                                size: 11,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            display: true,
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                if (value >= 1000000) {
+                                    return `Bs ${(value/1000000).toFixed(1)}M`;
+                                } else if (value >= 1000) {
+                                    return `Bs ${(value/1000).toFixed(0)}k`;
+                                }
+                                return `Bs ${value.toLocaleString('es-VE', {maximumFractionDigits: 0})}`;
+                            },
+                            font: {
+                                size: 10
+                            }
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Operaciones',
+                            color: colorOperaciones,
+                            font: {
+                                size: 11,
+                                weight: 'bold'
+                            }
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                        ticks: {
+                            font: {
+                                size: 10
+                            },
+                            color: colorOperaciones
+                        }
                     }
                 }
-            },
-            interaction: {
-                intersect: false,
-                mode: 'index'
+            }
+        });
+        
+        console.log('Gráfico de volumen creado exitosamente');
+    }
+    
+    // Función para alternar visibilidad de dataset en gráfico comparativo
+    window.toggleDataset = function(datasetIndex) {
+        if (window.chartComparativo) {
+            if (datasetIndex < window.chartComparativo.data.datasets.length) {
+                const meta = window.chartComparativo.getDatasetMeta(datasetIndex);
+                meta.hidden = meta.hidden === null ? !window.chartComparativo.data.datasets[datasetIndex].hidden : null;
+                window.chartComparativo.data.datasets[datasetIndex].hidden = !window.chartComparativo.data.datasets[datasetIndex].hidden;
+                window.chartComparativo.update();
             }
         }
-    });
+    };
     
-    // Redimensionar gráfico al cambiar tamaño de ventana
-    window.addEventListener('resize', function() {
-        chart.options.plugins.legend.display = window.innerWidth >= 768;
-        chart.options.scales.x.ticks.maxRotation = window.innerWidth < 768 ? 90 : 45;
-        chart.options.scales.x.ticks.minRotation = window.innerWidth < 768 ? 90 : 45;
-        chart.options.scales.x.ticks.font.size = window.innerWidth < 768 ? 9 : 11;
-        chart.options.scales.y.ticks.font.size = window.innerWidth < 768 ? 9 : 11;
-        chart.options.plugins.tooltip.titleFont.size = window.innerWidth < 768 ? 11 : 12;
-        chart.options.plugins.tooltip.bodyFont.size = window.innerWidth < 768 ? 11 : 12;
-        chart.update();
-    });
+    // Función para cambiar tipo de gráfico de volumen
+    window.toggleVolumeChartType = function(type) {
+        if (window.chartVolumen) {
+            if (type === 'bar') {
+                // Cambiar a barras
+                window.chartVolumen.data.datasets[0].type = 'bar';
+                window.chartVolumen.data.datasets[0].backgroundColor = 'rgba(59, 130, 246, 0.7)';
+                window.chartVolumen.data.datasets[0].borderWidth = 1;
+            } else if (type === 'line') {
+                // Cambiar a líneas
+                window.chartVolumen.data.datasets[0].type = 'line';
+                window.chartVolumen.data.datasets[0].backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                window.chartVolumen.data.datasets[0].borderWidth = 2;
+                window.chartVolumen.data.datasets[0].pointRadius = 2;
+                window.chartVolumen.data.datasets[0].pointHoverRadius = 4;
+                window.chartVolumen.data.datasets[0].pointBackgroundColor = 'rgb(59, 130, 246)';
+                window.chartVolumen.data.datasets[0].pointBorderColor = '#ffffff';
+                window.chartVolumen.data.datasets[0].pointBorderWidth = 1;
+                window.chartVolumen.data.datasets[0].fill = true;
+                window.chartVolumen.data.datasets[0].tension = 0.3;
+            }
+            
+            window.chartVolumen.update();
+        }
+    };
 });
 </script>
 
 {% else %}
 <!-- Mensaje cuando no hay datos -->
-<div class="text-center py-12 md:py-20 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800/50 dark:to-slate-900/30 rounded-xl md:rounded-3xl border-2 border-dashed border-slate-300 dark:border-slate-700 px-4">
-    <div class="text-5xl md:text-6xl mb-4 animate-bounce">📈</div>
-    <h3 class="text-lg md:text-xl font-black">Sin datos históricos para mostrar</h3>
-    <p class="text-slate-500 dark:text-slate-400 text-sm max-w-md mx-auto mt-2">
-        {% if simbolo %}
-        No se encontraron registros para {{ simbolo }} en el período seleccionado.
-        {% else %}
-        Ingresa un símbolo y selecciona un rango de fechas para consultar el histórico.
-        {% endif %}
+<div class="text-center py-16 md:py-20">
+    <div class="text-6xl md:text-7xl mb-4">📊</div>
+    <h3 class="text-xl md:text-2xl font-black mb-2">Consulta Histórica</h3>
+    <p class="text-slate-500 dark:text-slate-400 mb-6 max-w-md mx-auto">
+        Ingresa un símbolo y selecciona un rango de fechas para ver el análisis histórico con comparativa vs dólar BCV.
     </p>
-    
-    <div class="mt-6 grid grid-cols-2 md:grid-cols-3 gap-3 max-w-lg mx-auto">
-        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/10 p-3 rounded-xl border border-blue-200 dark:border-blue-800/30">
-            <span class="text-xl">🔍</span>
-            <p class="text-xs font-bold mt-1">Busca por Símbolo</p>
-        </div>
-        <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/10 p-3 rounded-xl border border-green-200 dark:border-green-800/30">
-            <span class="text-xl">📅</span>
-            <p class="text-xs font-bold mt-1">Selecciona Fechas</p>
-        </div>
-        <div class="col-span-2 md:col-span-1 bg-gradient-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/10 p-3 rounded-xl border border-purple-200 dark:border-purple-800/30">
-            <span class="text-xl">📊</span>
-            <p class="text-xs font-bold mt-1">Visualiza Gráficos</p>
-        </div>
+    <div class="inline-block p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl animate-pulse">
+        <p class="text-white font-bold px-4 py-2">🚀 Consulta ultra rápida con SQLite</p>
     </div>
 </div>
 {% endif %}
 
-<!-- CSS adicional para responsividad -->
-<style>
-/* Mejoras para móvil */
-@media (max-width: 768px) {
-    .chart-container {
-        margin: 0 -0.5rem;
-        padding: 0 0.5rem;
+<!-- Script para autocomplete de acciones -->
+<script>
+// Mantener el script de autocomplete existente
+document.getElementById('simboloInput').addEventListener('input', function(e) {
+    const query = e.target.value.trim().toUpperCase();
+    const container = document.getElementById('sugerenciasContainer');
+    
+    if (query.length < 2) {
+        container.classList.add('hidden');
+        return;
     }
     
-    /* Mejorar toques */
-    button, a, [role="button"] {
-        -webkit-tap-highlight-color: transparent;
-        touch-action: manipulation;
-    }
+    fetch(`/api/acciones-disponibles`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.acciones) {
+                const filtered = data.acciones.filter(accion => 
+                    accion.simbolo.includes(query) || 
+                    accion.nombre.toUpperCase().includes(query)
+                );
+                
+                if (filtered.length > 0) {
+                    container.innerHTML = filtered.map(accion => `
+                        <div class="p-3 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700 last:border-b-0" 
+                             onclick="selectSuggestion('${accion.simbolo}')">
+                            <div class="font-bold text-sm">${accion.simbolo}</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400">${accion.nombre}</div>
+                        </div>
+                    `).join('');
+                    container.classList.remove('hidden');
+                } else {
+                    container.classList.add('hidden');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            container.classList.add('hidden');
+        });
+});
+
+function selectSuggestion(simbolo) {
+    document.getElementById('simboloInput').value = simbolo;
+    document.getElementById('sugerenciasContainer').classList.add('hidden');
+}
+
+// Cerrar sugerencias al hacer clic fuera
+document.addEventListener('click', function(e) {
+    const container = document.getElementById('sugerenciasContainer');
+    const input = document.getElementById('simboloInput');
     
-    /* Optimizar fuentes para móvil */
-    body {
-        font-size: 14px;
-        line-height: 1.5;
+    if (!container.contains(e.target) && e.target !== input) {
+        container.classList.add('hidden');
     }
-    
-    /* Ajustar contenedores */
-    .max-w-6xl {
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
-    }
-}
-
-/* Mejoras para tablets */
-@media (min-width: 769px) and (max-width: 1024px) {
-    .max-w-6xl {
-        max-width: 90%;
-    }
-}
-
-/* Asegurar que las tablas sean desplazables en móvil */
-.overflow-x-auto {
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Optimizar imágenes */
-img {
-    max-width: 100%;
-    height: auto;
-}
-
-/* Ajustar alturas mínimas para elementos interactivos */
-button, .btn, a[role="button"] {
-    min-height: 44px;
-    min-width: 44px;
-}
-</style>
+});
+</script>
 
 {% endblock %}
