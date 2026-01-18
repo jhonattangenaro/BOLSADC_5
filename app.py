@@ -2192,7 +2192,7 @@ def indices():
     # NUEVO: Obtener datos del dólar BCV para el mismo período
     datos_dolar_bcv = obtener_datos_dolar_bcv_historico(fecha_desde, fecha_hasta)
     
-    # Preparar datos para el gráfico - CORREGIDO PARA ALINEAR FECHAS
+    # Preparar datos para el gráfico - CORREGIDO PARA ALINEAR FECHAS Y MANEJAR DATOS FALTANTES
     labels = []
     valores = []
     dolar_tasas = []  # Para datos del dólar
@@ -2211,7 +2211,8 @@ def indices():
                 fecha_dolar = d['fecha']
                 dolar_por_fecha[fecha_dolar] = d['tasa']
         
-        for dato in datos_ordenados:
+        # **CORRECCIÓN: Usar interpolación para datos faltantes del dólar**
+        for i, dato in enumerate(datos_ordenados):
             fecha_ibc = dato['fecha']
             
             # Formatear fecha para el eje X
@@ -2231,8 +2232,33 @@ def indices():
             if fecha_ibc in dolar_por_fecha:
                 dolar_tasas.append(dolar_por_fecha[fecha_ibc])
             else:
-                # Si no hay dato exacto, usar 0
-                dolar_tasas.append(0)
+                # **CORRECCIÓN: En lugar de usar 0, usar interpolación o el último valor conocido**
+                if dolar_tasas and i > 0:
+                    # Usar el último valor conocido del dólar
+                    dolar_tasas.append(dolar_tasas[-1])
+                else:
+                    # Si es el primer dato y no hay valor, buscar la tasa más cercana
+                    # Buscar la tasa del dólar más cercana anterior a esta fecha
+                    tasa_estimada = 0
+                    if datos_dolar_bcv:
+                        # Ordenar tasas de dólar por fecha y buscar la más cercana anterior
+                        tasas_ordenadas = sorted(datos_dolar_bcv, key=lambda x: x['fecha'])
+                        for tasa in tasas_ordenadas:
+                            if tasa['fecha'] <= fecha_ibc:
+                                tasa_estimada = tasa['tasa']
+                            else:
+                                break
+                        if tasa_estimada == 0 and tasas_ordenadas:
+                            # Si no hay anterior, usar la primera disponible
+                            tasa_estimada = tasas_ordenadas[0]['tasa']
+                    
+                    dolar_tasas.append(tasa_estimada)
+    
+    # **AÑADIR: Log para depuración**
+    logger.info(f"Datos preparados para gráfico:")
+    logger.info(f"  - Fechas (labels): {len(labels)} registros")
+    logger.info(f"  - Valores IBC: {len(valores)} registros")
+    logger.info(f"  - Tasas Dólar: {len(dolar_tasas)} registros")
     
     # Calcular estadísticas del período
     try:
@@ -2276,7 +2302,14 @@ def indices():
             'ajustado': ultimo.get('ajustado', False)
         }
     
-    logger.info(f"Enviando a plantilla: {len(labels)} labels, {len(valores)} valores, {len(dolar_tasas)} tasas dólar")
+        # **CORREGIR LOG PARA MOSTRAR INFORMACIÓN DETALLADA**
+    logger.info(f"Enviando a plantilla: {len(labels)} labels, {len(valores)} valores IBC, {len(dolar_tasas)} tasas dólar")
+    
+    # Mostrar muestras de datos para verificar
+    if labels and len(labels) > 5:
+        logger.info(f"Muestras de datos gráfico (primeros 5):")
+        for j in range(min(5, len(labels))):
+            logger.info(f"  {labels[j]}: IBC={valores[j]:.2f}, $={dolar_tasas[j]:.2f}")
     
     return render_template(
         'indices.html',
